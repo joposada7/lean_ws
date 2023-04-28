@@ -6,50 +6,67 @@ LEAN SSID pass: leanpass
 
 LEAN router login: admin; ceimp
 
-Debian Buster ISO: https://downloads.raspberrypi.org/raspios_arm64/images/raspios_arm64-2021-05-28/2021-05-07-raspios-buster-arm64.zip
 
-Debian Buster Install Instructions: https://qengineering.eu/install-64-os-on-raspberry-pi-zero-2.html
+# ROS1-Wayfarer
 
-ROS Noetic Install Instructions: http://wiki.ros.org/noetic/Installation/Debian
-
-# ROS2-Wayfarer
-
-ROS2 communication framework for low-power autonomous testbeds.
+ROS1 communication framework for low-power autonomous testbeds.
 
 # Getting the right OS
 
+ROS Noetic officially supports Ubuntu 20.04 Focal Fossa (Host computer) and Debian Buster (Raspberry Pi).
+
 ## Host computer
 
-For both the Raspberry Pi Zero 2 and the host computer virtual machine, we will be running Ubuntu Jammy Jellyfish (22.04).
-
-You may use a virtualization software of your choice (VMware, VirtualBox). Set up the virtual machine with the desktop image from this link: https://releases.ubuntu.com/jammy/
-
-IMPORTANT: make sure that the network adapter type is set to bridged for your VM. 
+You can find the Desktop LTS version of Focal here: https://releases.ubuntu.com/focal/
 
 ## Raspberry Pi
 
 Install the Raspberry Pi Imager from this link: https://www.raspberrypi.com/software/ 
 
-Open the imager, and choose Ubuntu Server 22.04.2 LTS (64-bit) under "Other general-purpose OS" as your operating system. Open the advanced options by pressing the gear at the bottom right and enable SSH, setting a personal username and password. Then configure wireless LAN to the following - SSID: LEAN, Password: wayfarer - and save the options. Flash your microSD card and wait for it to complete.
+Download the Debian Buster ISO: https://downloads.raspberrypi.org/raspios_arm64/images/raspios_arm64-2021-05-28/2021-05-07-raspios-buster-arm64.zip
+
+Insert your microSD and choose the custom .iso option, then choose the above downloaded image. Open the advanced options by pressing the gear at the bottom right and enable SSH, setting a personal username and password (name of your platform as username, "pass" as the password). Then configure wireless LAN to the following - SSID: LEAN, Password: leanpass - and save the options. Flash your microSD card and wait for it to complete.
+
+Remove your microSD then put it back into your computer so that you can access the files. Find the file named "bcm2710-rpi-3-b.dtb", copy it, then rename the copy to "bcm2710-rpi-zero-2.dtb".
 
 You can now boot up and SSH into your Pi.
 
-# Getting ROS2
+Once the Pi is booted up, enter the following commands:
+'''
+sudo apt-get update --allow-releaseinfo-change
+sudo apt-get update
+sudo apt-get remove --purge vlc
+sudo apt-get autoremove
+sudo apt-get clean
+sudo apt-get upgrade
+'''
+
+We will now reconfigure our locale:
+'''
+sudo raspi-config
+'''
+
+Choose Localisation Options --> Locale --> All locales --> en_GB.UTF-8 --> Finish
+
+We will now increase the swap file size.
+
+'''
+sudo dphys-swapfile swapoff
+sudo nano /etc/dphys-swapfile
+'''
+
+Edit the swap file size, increase CONF_SWAPSIZE to 2048, save and exit.
+
+Create, initialize, and start the swap file.
+'''
+sudo dphys-swapfile setup
+sudo dphys-swapfile swapon
+'''
+
+
+# Getting ROS Noetic
 
 For the most part, the installation for the host computer and the Pi is the same, they will differ in the final installed product, however. 
-
-## Set locale
-
-```
-locale  # check for UTF-8
-
-sudo apt update && sudo apt install locales
-sudo locale-gen en_US en_US.UTF-8
-sudo update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
-export LANG=en_US.UTF-8
-
-locale  # verify settings
-```
 
 ## Setup sources
 
@@ -139,3 +156,8 @@ source install/local_setup.bash
 ```
 
 We will now be able to access our launch files and respective packages!
+
+# References
+Debian Buster Install Instructions: https://qengineering.eu/install-64-os-on-raspberry-pi-zero-2.html
+
+ROS Noetic Install Instructions: http://wiki.ros.org/noetic/Installation/Debian
