@@ -1,0 +1,2 @@
+acl_msgs:optitrack_motive_2_client
+-DCATKIN_DEVEL_PREFIX=/home/alex/NoeticLean/devel -DCMAKE_INSTALL_PREFIX=/home/alex/NoeticLean/install -G Unix Makefiles
