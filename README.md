@@ -12,11 +12,13 @@ Debian Buster Install Instructions: https://qengineering.eu/install-64-os-on-ras
 
 ROS Noetic Install Instructions: http://wiki.ros.org/noetic/Installation/Debian
 
-Run the following to build:'
+Run the following to build:
 
 '''
+{
 cd /NoeticLean/src
 wstool update
 cd ../
 catkin_make
+}
 '''
