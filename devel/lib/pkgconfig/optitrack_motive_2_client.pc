@@ -1,8 +1,0 @@
-prefix=/home/alex/NoeticLean/devel
-
-Name: optitrack_motive_2_client
-Description: Description of optitrack_motive_2_client
-Version: 0.0.1
-Cflags: -I/home/alex/NoeticLean/src/optitrack_motive_2_client/include
-Libs: -L${prefix}/lib -loptitrack_motive_2_client
-Requires: nav_msgs acl_msgs roscpp rostime std_msgs
