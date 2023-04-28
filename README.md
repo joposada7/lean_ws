@@ -32,36 +32,36 @@ Remove your microSD then put it back into your computer so that you can access t
 You can now boot up and SSH into your Pi.
 
 Once the Pi is booted up, enter the following commands:
-'''
+```
 sudo apt-get update --allow-releaseinfo-change
 sudo apt-get update
 sudo apt-get remove --purge vlc
 sudo apt-get autoremove
 sudo apt-get clean
 sudo apt-get upgrade
-'''
+```
 
 We will now reconfigure our locale:
-'''
+```
 sudo raspi-config
-'''
+```
 
 Choose Localisation Options --> Locale --> All locales --> en_GB.UTF-8 --> Finish
 
 We will now increase the swap file size.
 
-'''
+```
 sudo dphys-swapfile swapoff
 sudo nano /etc/dphys-swapfile
-'''
+```
 
 Edit the swap file size, increase CONF_SWAPSIZE to 2048, save and exit.
 
 Create, initialize, and start the swap file.
-'''
+```
 sudo dphys-swapfile setup
 sudo dphys-swapfile swapon
-'''
+```
 
 
 # Getting ROS Noetic
