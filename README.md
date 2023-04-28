@@ -25,11 +25,20 @@ Install the Raspberry Pi Imager from this link: https://www.raspberrypi.com/soft
 
 Download the Debian Buster ISO: https://downloads.raspberrypi.org/raspios_arm64/images/raspios_arm64-2021-05-28/2021-05-07-raspios-buster-arm64.zip
 
-Insert your microSD and choose the custom .iso option, then choose the above downloaded image. Open the advanced options by pressing the gear at the bottom right and enable SSH, setting a personal username and password (name of your platform as username, "pass" as the password). Then configure wireless LAN to the following - SSID: LEAN, Password: leanpass - and save the options. Flash your microSD card and wait for it to complete.
+### Flashing the microSD
+
+Insert your microSD and choose the custom .iso option, then choose the above downloaded image. 
+
+Open the advanced options by pressing the gear at the bottom right and enable SSH, setting a personal username and password (name of your platform as username, "pass" as the password). Then configure wireless LAN to the following - SSID: LEAN, Password: leanpass - and save the options. 
+
+Flash your microSD card and wait for it to complete.
 
 Remove your microSD then put it back into your computer so that you can access the files. Find the file named "bcm2710-rpi-3-b.dtb", copy it, then rename the copy to "bcm2710-rpi-zero-2.dtb".
 
 You can now boot up and SSH into your Pi.
+
+
+### Configuring the Raspberry Pi
 
 Once the Pi is booted up, enter the following commands:
 ```
@@ -63,63 +72,90 @@ sudo dphys-swapfile setup
 sudo dphys-swapfile swapon
 ```
 
+The Raspberry Pi is now ready to install ROS.
 
 # Getting ROS Noetic
 
-For the most part, the installation for the host computer and the Pi is the same, they will differ in the final installed product, however. 
+## Debian
 
-## Setup sources
+### Editing sources.list
 
-You will need to add the ROS2 repository to your system.
+You will need to edit the Debian repository permissions.
+```
+sudo nano /etc/apt/sources.list
+```
+Uncomment the last three lines in the sources.list file, then save and exit.
+
+### Adding the package sources and keys
 
 ```
-sudo apt install software-properties-common
-sudo add-apt-repository universe
-```
-
-Now add the ROS 2 GPG key with apt.
-
-```
-sudo apt update && sudo apt install curl -y
-sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
-```
-
-Then add the repository to your sources list.
-
-```
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
-```
-
-## Install ROS2 packages
-
-Update your apt repository caches after setting up the repositories.
-
-```
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
 sudo apt update
 ```
 
-### Host computer installation
-
-We will do the full desktop install for our host computer (ROS, RViz, demos, tutorials).
-
+### ROS installation and setup
+We will now install the bare bones Noetic.
 ```
-sudo apt install ros-humble-desktop
+sudo apt install ros-noetic-ros-base
 ```
 
-### Raspberry Pi installation
-
-We will do a bare bones installation for the Pi (Communication libraries, message packages, command line tools. No GUI tools).
-
+When that finishes installing, you can source your underlay:
 ```
-sudo apt install ros-humble-ros-base
+source /opt/ros/noetic/setup.bash
 ```
 
-## Environment setup
+And test the installation by viewing available packages:
+```
+rospack list-names
+```
+You should see a list of about 30 available ROS packages.
 
-Source the setup script; this makes our ROS2 packages available system wide. For now, we will need to run this whenever we open a new terminal.
+If you don't want to source the underlay every time you open a terminal, use the following to run automatically on startup.
+```
+echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
+```
+
+## Ubuntu
+
+### Editing permissions
+
+Configure your Ubuntu repositories to allow "restricted," "universe," and "multiverse." 
+```
+add-apt-repository universe
+add-apt-repository multiverse
+add-apt-repository restricted
+```
+
+### Adding the package sources and keys
+```
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+```
 
 ```
-source /opt/ros/humble/setup.bash
+sudo apt install curl
+curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
+sudo apt update
+```
+
+### ROS installation and setup
+```
+sudo apt install ros-noetic-desktop-full
+```
+When that finishes installing, you can source your underlay:
+```
+source /opt/ros/noetic/setup.bash
+```
+
+And test the installation by viewing available packages:
+```
+rospack list-names
+```
+You should see a list of about 30 available ROS packages.
+
+If you don't want to source the underlay every time you open a terminal, use the following to run automatically on startup.
+```
+echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 ```
 
 ## Using this repository
@@ -127,35 +163,32 @@ source /opt/ros/humble/setup.bash
 We can now clone our repository (on both host and Pi):
 
 ```
-git clone https://github.com/alexrice236/ROS2-Wayfarer.git
+git clone git@github.com:alexrice236/NoeticLean.git
 ```
 
-After cloning, we will build our custom packages using colcon.
+Change to our workspace source directory and update .rosinstall:
 
 ```
-cd ~/ROS2-Wayfarer
-colcon build
+cd ~/NoeticLean/src
+wstool update
 ```
 
-Once the build is finished, open a new terminal and source the underlay:
+Return to the root of our workspace and build our packages (this might take a while on the Pi):
 
 ```
-source /opt/ros/humble/setup.bash
+cd ../
+catkin_make
 ```
 
-Go into the root of our workspace:
+Source the overlay:
 
 ```
-cd ~/ROS2-Wayfarer
-```
-
-In the root, source our overlay:
-
-```
-source install/local_setup.bash
+source devel/setup.bash
 ```
 
 We will now be able to access our launch files and respective packages!
+
+***IMPORTANT : If you need to commit to this repository, do not add your build/ and devel/ directories.
 
 # References
 Debian Buster Install Instructions: https://qengineering.eu/install-64-os-on-raspberry-pi-zero-2.html
