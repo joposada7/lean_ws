@@ -11,3 +11,11 @@ Debian Buster ISO: https://downloads.raspberrypi.org/raspios_arm64/images/raspio
 Debian Buster Install Instructions: https://qengineering.eu/install-64-os-on-raspberry-pi-zero-2.html
 
 ROS Noetic Install Instructions: http://wiki.ros.org/noetic/Installation/Debian
+
+Run the following to build:
+'''
+cd /NoeticLean/src
+wstool update
+cd ../
+catkin_make
+'''
