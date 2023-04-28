@@ -1,8 +1,8 @@
-# Install script for directory: /home/alex/NoeticLean/src/optitrack_motive_2_client
+# Install script for directory: /home/wayfarer/NoeticLean/src/optitrack_motive_2_client
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/alex/NoeticLean/install")
+  set(CMAKE_INSTALL_PREFIX "/home/wayfarer/NoeticLean/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -38,18 +38,18 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/alex/NoeticLean/build/optitrack_motive_2_client/catkin_generated/installspace/optitrack_motive_2_client.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/wayfarer/NoeticLean/build/optitrack_motive_2_client/catkin_generated/installspace/optitrack_motive_2_client.pc")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/optitrack_motive_2_client/cmake" TYPE FILE FILES
-    "/home/alex/NoeticLean/build/optitrack_motive_2_client/catkin_generated/installspace/optitrack_motive_2_clientConfig.cmake"
-    "/home/alex/NoeticLean/build/optitrack_motive_2_client/catkin_generated/installspace/optitrack_motive_2_clientConfig-version.cmake"
+    "/home/wayfarer/NoeticLean/build/optitrack_motive_2_client/catkin_generated/installspace/optitrack_motive_2_clientConfig.cmake"
+    "/home/wayfarer/NoeticLean/build/optitrack_motive_2_client/catkin_generated/installspace/optitrack_motive_2_clientConfig-version.cmake"
     )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/optitrack_motive_2_client" TYPE FILE FILES "/home/alex/NoeticLean/src/optitrack_motive_2_client/package.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/optitrack_motive_2_client" TYPE FILE FILES "/home/wayfarer/NoeticLean/src/optitrack_motive_2_client/package.xml")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
@@ -59,12 +59,12 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/optitrack_motive_2_client/optitrack_motive_2_client_node"
          RPATH "")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/optitrack_motive_2_client" TYPE EXECUTABLE FILES "/home/alex/NoeticLean/devel/lib/optitrack_motive_2_client/optitrack_motive_2_client_node")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/optitrack_motive_2_client" TYPE EXECUTABLE FILES "/home/wayfarer/NoeticLean/devel/lib/optitrack_motive_2_client/optitrack_motive_2_client_node")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/optitrack_motive_2_client/optitrack_motive_2_client_node" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/optitrack_motive_2_client/optitrack_motive_2_client_node")
     file(RPATH_CHANGE
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/optitrack_motive_2_client/optitrack_motive_2_client_node"
-         OLD_RPATH "/home/alex/NoeticLean/devel/lib:/opt/ros/noetic/lib:"
+         OLD_RPATH "/home/wayfarer/NoeticLean/devel/lib:/opt/ros/noetic/lib:"
          NEW_RPATH "")
     if(CMAKE_INSTALL_DO_STRIP)
       execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/optitrack_motive_2_client/optitrack_motive_2_client_node")

@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/alex/NoeticLean/devel/include/acl_msgs/ViconState.h
+/home/wayfarer/NoeticLean/devel/include/acl_msgs/ViconState.h
 string
 -
 vector
@@ -30,7 +30,7 @@ geometry_msgs/Twist.h
 geometry_msgs/Vector3.h
 -
 
-/home/alex/NoeticLean/src/optitrack_motive_2_client/include/optitrack_motive_2_client/motionCaptureClientFramework.h
+/home/wayfarer/NoeticLean/src/optitrack_motive_2_client/include/optitrack_motive_2_client/motionCaptureClientFramework.h
 vector
 -
 iostream
@@ -54,13 +54,13 @@ netdb.h
 cstring
 -
 
-/home/alex/NoeticLean/src/optitrack_motive_2_client/src/optitrack_motive_2_client_node.cpp
+/home/wayfarer/NoeticLean/src/optitrack_motive_2_client/src/optitrack_motive_2_client_node.cpp
 optitrack_motive_2_client/motionCaptureClientFramework.h
-/home/alex/NoeticLean/src/optitrack_motive_2_client/src/optitrack_motive_2_client/motionCaptureClientFramework.h
+/home/wayfarer/NoeticLean/src/optitrack_motive_2_client/src/optitrack_motive_2_client/motionCaptureClientFramework.h
 acl_msgs/ViconState.h
-/home/alex/NoeticLean/src/optitrack_motive_2_client/src/acl_msgs/ViconState.h
+/home/wayfarer/NoeticLean/src/optitrack_motive_2_client/src/acl_msgs/ViconState.h
 ros/ros.h
-/home/alex/NoeticLean/src/optitrack_motive_2_client/src/ros/ros.h
+/home/wayfarer/NoeticLean/src/optitrack_motive_2_client/src/ros/ros.h
 boost/program_options.hpp
 -
 Eigen/Core

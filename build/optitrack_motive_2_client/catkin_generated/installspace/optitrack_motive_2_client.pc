@@ -1,4 +1,4 @@
-prefix=/home/alex/NoeticLean/install
+prefix=/home/wayfarer/NoeticLean/install
 
 Name: optitrack_motive_2_client
 Description: Description of optitrack_motive_2_client

@@ -1,4 +1,4 @@
-prefix=/home/alex/NoeticLean/install
+prefix=/home/wayfarer/NoeticLean/install
 
 Name: acl_msgs
 Description: Description of acl_msgs

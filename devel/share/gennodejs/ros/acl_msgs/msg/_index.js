@@ -1,18 +1,18 @@
 
 "use strict";
 
-let State = require('./State.js');
-let QuadAttCmd = require('./QuadAttCmd.js');
 let IMU = require('./IMU.js');
-let QuadMotors = require('./QuadMotors.js');
-let ViconState = require('./ViconState.js');
+let QuadAttCmd = require('./QuadAttCmd.js');
 let SMCData = require('./SMCData.js');
+let State = require('./State.js');
+let ViconState = require('./ViconState.js');
+let QuadMotors = require('./QuadMotors.js');
 
 module.exports = {
-  State: State,
-  QuadAttCmd: QuadAttCmd,
   IMU: IMU,
-  QuadMotors: QuadMotors,
-  ViconState: ViconState,
+  QuadAttCmd: QuadAttCmd,
   SMCData: SMCData,
+  State: State,
+  ViconState: ViconState,
+  QuadMotors: QuadMotors,
 };

@@ -6,5 +6,5 @@ CXX_FLAGS = -fPIC   -std=c++11
 
 CXX_DEFINES = -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\"optitrack_motive_2_client\" -Doptitrack_motive_2_client_EXPORTS
 
-CXX_INCLUDES = -I/home/alex/NoeticLean/src/optitrack_motive_2_client/include -I/home/alex/NoeticLean/devel/include -I/opt/ros/noetic/include -I/opt/ros/noetic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/usr/include/eigen3 
+CXX_INCLUDES = -I/home/wayfarer/NoeticLean/src/optitrack_motive_2_client/include -I/home/wayfarer/NoeticLean/devel/include -I/opt/ros/noetic/include -I/opt/ros/noetic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/usr/include/eigen3 
 

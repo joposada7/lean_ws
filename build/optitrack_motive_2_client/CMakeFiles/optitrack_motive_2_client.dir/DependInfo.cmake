@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/alex/NoeticLean/src/optitrack_motive_2_client/include/optitrack_motive_2_client/motionCaptureClientFramework.cpp" "/home/alex/NoeticLean/build/optitrack_motive_2_client/CMakeFiles/optitrack_motive_2_client.dir/include/optitrack_motive_2_client/motionCaptureClientFramework.cpp.o"
+  "/home/wayfarer/NoeticLean/src/optitrack_motive_2_client/include/optitrack_motive_2_client/motionCaptureClientFramework.cpp" "/home/wayfarer/NoeticLean/build/optitrack_motive_2_client/CMakeFiles/optitrack_motive_2_client.dir/include/optitrack_motive_2_client/motionCaptureClientFramework.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
@@ -18,8 +18,8 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
-  "/home/alex/NoeticLean/src/optitrack_motive_2_client/include"
-  "/home/alex/NoeticLean/devel/include"
+  "/home/wayfarer/NoeticLean/src/optitrack_motive_2_client/include"
+  "/home/wayfarer/NoeticLean/devel/include"
   "/opt/ros/noetic/include"
   "/opt/ros/noetic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp"
   "/usr/include/eigen3"

@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/alex/NoeticLean/src
+CMAKE_SOURCE_DIR = /home/wayfarer/NoeticLean/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/alex/NoeticLean/build
+CMAKE_BINARY_DIR = /home/wayfarer/NoeticLean/build
 
 # Utility rule file for nav_msgs_generate_messages_cpp.
 
@@ -63,10 +63,10 @@ optitrack_motive_2_client/CMakeFiles/nav_msgs_generate_messages_cpp.dir/build: n
 .PHONY : optitrack_motive_2_client/CMakeFiles/nav_msgs_generate_messages_cpp.dir/build
 
 optitrack_motive_2_client/CMakeFiles/nav_msgs_generate_messages_cpp.dir/clean:
-	cd /home/alex/NoeticLean/build/optitrack_motive_2_client && $(CMAKE_COMMAND) -P CMakeFiles/nav_msgs_generate_messages_cpp.dir/cmake_clean.cmake
+	cd /home/wayfarer/NoeticLean/build/optitrack_motive_2_client && $(CMAKE_COMMAND) -P CMakeFiles/nav_msgs_generate_messages_cpp.dir/cmake_clean.cmake
 .PHONY : optitrack_motive_2_client/CMakeFiles/nav_msgs_generate_messages_cpp.dir/clean
 
 optitrack_motive_2_client/CMakeFiles/nav_msgs_generate_messages_cpp.dir/depend:
-	cd /home/alex/NoeticLean/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/alex/NoeticLean/src /home/alex/NoeticLean/src/optitrack_motive_2_client /home/alex/NoeticLean/build /home/alex/NoeticLean/build/optitrack_motive_2_client /home/alex/NoeticLean/build/optitrack_motive_2_client/CMakeFiles/nav_msgs_generate_messages_cpp.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/wayfarer/NoeticLean/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/wayfarer/NoeticLean/src /home/wayfarer/NoeticLean/src/optitrack_motive_2_client /home/wayfarer/NoeticLean/build /home/wayfarer/NoeticLean/build/optitrack_motive_2_client /home/wayfarer/NoeticLean/build/optitrack_motive_2_client/CMakeFiles/nav_msgs_generate_messages_cpp.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : optitrack_motive_2_client/CMakeFiles/nav_msgs_generate_messages_cpp.dir/depend
 

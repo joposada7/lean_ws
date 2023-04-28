@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/alex/NoeticLean/src
+CMAKE_SOURCE_DIR = /home/wayfarer/NoeticLean/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/alex/NoeticLean/build
+CMAKE_BINARY_DIR = /home/wayfarer/NoeticLean/build
 
 # Utility rule file for std_msgs_generate_messages_py.
 
@@ -63,10 +63,10 @@ acl_msgs/CMakeFiles/std_msgs_generate_messages_py.dir/build: std_msgs_generate_m
 .PHONY : acl_msgs/CMakeFiles/std_msgs_generate_messages_py.dir/build
 
 acl_msgs/CMakeFiles/std_msgs_generate_messages_py.dir/clean:
-	cd /home/alex/NoeticLean/build/acl_msgs && $(CMAKE_COMMAND) -P CMakeFiles/std_msgs_generate_messages_py.dir/cmake_clean.cmake
+	cd /home/wayfarer/NoeticLean/build/acl_msgs && $(CMAKE_COMMAND) -P CMakeFiles/std_msgs_generate_messages_py.dir/cmake_clean.cmake
 .PHONY : acl_msgs/CMakeFiles/std_msgs_generate_messages_py.dir/clean
 
 acl_msgs/CMakeFiles/std_msgs_generate_messages_py.dir/depend:
-	cd /home/alex/NoeticLean/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/alex/NoeticLean/src /home/alex/NoeticLean/src/acl_msgs /home/alex/NoeticLean/build /home/alex/NoeticLean/build/acl_msgs /home/alex/NoeticLean/build/acl_msgs/CMakeFiles/std_msgs_generate_messages_py.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/wayfarer/NoeticLean/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/wayfarer/NoeticLean/src /home/wayfarer/NoeticLean/src/acl_msgs /home/wayfarer/NoeticLean/build /home/wayfarer/NoeticLean/build/acl_msgs /home/wayfarer/NoeticLean/build/acl_msgs/CMakeFiles/std_msgs_generate_messages_py.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : acl_msgs/CMakeFiles/std_msgs_generate_messages_py.dir/depend
 

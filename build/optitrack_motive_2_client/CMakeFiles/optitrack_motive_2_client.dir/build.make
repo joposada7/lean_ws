@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/alex/NoeticLean/src
+CMAKE_SOURCE_DIR = /home/wayfarer/NoeticLean/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/alex/NoeticLean/build
+CMAKE_BINARY_DIR = /home/wayfarer/NoeticLean/build
 
 # Include any dependencies generated for this target.
 include optitrack_motive_2_client/CMakeFiles/optitrack_motive_2_client.dir/depend.make
@@ -58,17 +58,17 @@ include optitrack_motive_2_client/CMakeFiles/optitrack_motive_2_client.dir/progr
 include optitrack_motive_2_client/CMakeFiles/optitrack_motive_2_client.dir/flags.make
 
 optitrack_motive_2_client/CMakeFiles/optitrack_motive_2_client.dir/include/optitrack_motive_2_client/motionCaptureClientFramework.cpp.o: optitrack_motive_2_client/CMakeFiles/optitrack_motive_2_client.dir/flags.make
-optitrack_motive_2_client/CMakeFiles/optitrack_motive_2_client.dir/include/optitrack_motive_2_client/motionCaptureClientFramework.cpp.o: /home/alex/NoeticLean/src/optitrack_motive_2_client/include/optitrack_motive_2_client/motionCaptureClientFramework.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/alex/NoeticLean/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object optitrack_motive_2_client/CMakeFiles/optitrack_motive_2_client.dir/include/optitrack_motive_2_client/motionCaptureClientFramework.cpp.o"
-	cd /home/alex/NoeticLean/build/optitrack_motive_2_client && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/optitrack_motive_2_client.dir/include/optitrack_motive_2_client/motionCaptureClientFramework.cpp.o -c /home/alex/NoeticLean/src/optitrack_motive_2_client/include/optitrack_motive_2_client/motionCaptureClientFramework.cpp
+optitrack_motive_2_client/CMakeFiles/optitrack_motive_2_client.dir/include/optitrack_motive_2_client/motionCaptureClientFramework.cpp.o: /home/wayfarer/NoeticLean/src/optitrack_motive_2_client/include/optitrack_motive_2_client/motionCaptureClientFramework.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/wayfarer/NoeticLean/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object optitrack_motive_2_client/CMakeFiles/optitrack_motive_2_client.dir/include/optitrack_motive_2_client/motionCaptureClientFramework.cpp.o"
+	cd /home/wayfarer/NoeticLean/build/optitrack_motive_2_client && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/optitrack_motive_2_client.dir/include/optitrack_motive_2_client/motionCaptureClientFramework.cpp.o -c /home/wayfarer/NoeticLean/src/optitrack_motive_2_client/include/optitrack_motive_2_client/motionCaptureClientFramework.cpp
 
 optitrack_motive_2_client/CMakeFiles/optitrack_motive_2_client.dir/include/optitrack_motive_2_client/motionCaptureClientFramework.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/optitrack_motive_2_client.dir/include/optitrack_motive_2_client/motionCaptureClientFramework.cpp.i"
-	cd /home/alex/NoeticLean/build/optitrack_motive_2_client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/alex/NoeticLean/src/optitrack_motive_2_client/include/optitrack_motive_2_client/motionCaptureClientFramework.cpp > CMakeFiles/optitrack_motive_2_client.dir/include/optitrack_motive_2_client/motionCaptureClientFramework.cpp.i
+	cd /home/wayfarer/NoeticLean/build/optitrack_motive_2_client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/wayfarer/NoeticLean/src/optitrack_motive_2_client/include/optitrack_motive_2_client/motionCaptureClientFramework.cpp > CMakeFiles/optitrack_motive_2_client.dir/include/optitrack_motive_2_client/motionCaptureClientFramework.cpp.i
 
 optitrack_motive_2_client/CMakeFiles/optitrack_motive_2_client.dir/include/optitrack_motive_2_client/motionCaptureClientFramework.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/optitrack_motive_2_client.dir/include/optitrack_motive_2_client/motionCaptureClientFramework.cpp.s"
-	cd /home/alex/NoeticLean/build/optitrack_motive_2_client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/alex/NoeticLean/src/optitrack_motive_2_client/include/optitrack_motive_2_client/motionCaptureClientFramework.cpp -o CMakeFiles/optitrack_motive_2_client.dir/include/optitrack_motive_2_client/motionCaptureClientFramework.cpp.s
+	cd /home/wayfarer/NoeticLean/build/optitrack_motive_2_client && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/wayfarer/NoeticLean/src/optitrack_motive_2_client/include/optitrack_motive_2_client/motionCaptureClientFramework.cpp -o CMakeFiles/optitrack_motive_2_client.dir/include/optitrack_motive_2_client/motionCaptureClientFramework.cpp.s
 
 # Object files for target optitrack_motive_2_client
 optitrack_motive_2_client_OBJECTS = \
@@ -77,22 +77,22 @@ optitrack_motive_2_client_OBJECTS = \
 # External object files for target optitrack_motive_2_client
 optitrack_motive_2_client_EXTERNAL_OBJECTS =
 
-/home/alex/NoeticLean/devel/lib/liboptitrack_motive_2_client.so: optitrack_motive_2_client/CMakeFiles/optitrack_motive_2_client.dir/include/optitrack_motive_2_client/motionCaptureClientFramework.cpp.o
-/home/alex/NoeticLean/devel/lib/liboptitrack_motive_2_client.so: optitrack_motive_2_client/CMakeFiles/optitrack_motive_2_client.dir/build.make
-/home/alex/NoeticLean/devel/lib/liboptitrack_motive_2_client.so: optitrack_motive_2_client/CMakeFiles/optitrack_motive_2_client.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/alex/NoeticLean/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX shared library /home/alex/NoeticLean/devel/lib/liboptitrack_motive_2_client.so"
-	cd /home/alex/NoeticLean/build/optitrack_motive_2_client && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/optitrack_motive_2_client.dir/link.txt --verbose=$(VERBOSE)
+/home/wayfarer/NoeticLean/devel/lib/liboptitrack_motive_2_client.so: optitrack_motive_2_client/CMakeFiles/optitrack_motive_2_client.dir/include/optitrack_motive_2_client/motionCaptureClientFramework.cpp.o
+/home/wayfarer/NoeticLean/devel/lib/liboptitrack_motive_2_client.so: optitrack_motive_2_client/CMakeFiles/optitrack_motive_2_client.dir/build.make
+/home/wayfarer/NoeticLean/devel/lib/liboptitrack_motive_2_client.so: optitrack_motive_2_client/CMakeFiles/optitrack_motive_2_client.dir/link.txt
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/wayfarer/NoeticLean/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX shared library /home/wayfarer/NoeticLean/devel/lib/liboptitrack_motive_2_client.so"
+	cd /home/wayfarer/NoeticLean/build/optitrack_motive_2_client && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/optitrack_motive_2_client.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
-optitrack_motive_2_client/CMakeFiles/optitrack_motive_2_client.dir/build: /home/alex/NoeticLean/devel/lib/liboptitrack_motive_2_client.so
+optitrack_motive_2_client/CMakeFiles/optitrack_motive_2_client.dir/build: /home/wayfarer/NoeticLean/devel/lib/liboptitrack_motive_2_client.so
 
 .PHONY : optitrack_motive_2_client/CMakeFiles/optitrack_motive_2_client.dir/build
 
 optitrack_motive_2_client/CMakeFiles/optitrack_motive_2_client.dir/clean:
-	cd /home/alex/NoeticLean/build/optitrack_motive_2_client && $(CMAKE_COMMAND) -P CMakeFiles/optitrack_motive_2_client.dir/cmake_clean.cmake
+	cd /home/wayfarer/NoeticLean/build/optitrack_motive_2_client && $(CMAKE_COMMAND) -P CMakeFiles/optitrack_motive_2_client.dir/cmake_clean.cmake
 .PHONY : optitrack_motive_2_client/CMakeFiles/optitrack_motive_2_client.dir/clean
 
 optitrack_motive_2_client/CMakeFiles/optitrack_motive_2_client.dir/depend:
-	cd /home/alex/NoeticLean/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/alex/NoeticLean/src /home/alex/NoeticLean/src/optitrack_motive_2_client /home/alex/NoeticLean/build /home/alex/NoeticLean/build/optitrack_motive_2_client /home/alex/NoeticLean/build/optitrack_motive_2_client/CMakeFiles/optitrack_motive_2_client.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/wayfarer/NoeticLean/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/wayfarer/NoeticLean/src /home/wayfarer/NoeticLean/src/optitrack_motive_2_client /home/wayfarer/NoeticLean/build /home/wayfarer/NoeticLean/build/optitrack_motive_2_client /home/wayfarer/NoeticLean/build/optitrack_motive_2_client/CMakeFiles/optitrack_motive_2_client.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : optitrack_motive_2_client/CMakeFiles/optitrack_motive_2_client.dir/depend
 

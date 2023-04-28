@@ -67,14 +67,14 @@ set(optitrack_motive_2_client_CONFIG_INCLUDED TRUE)
 
 # set variables for source/devel/install prefixes
 if("FALSE" STREQUAL "TRUE")
-  set(optitrack_motive_2_client_SOURCE_PREFIX /home/alex/NoeticLean/src/optitrack_motive_2_client)
-  set(optitrack_motive_2_client_DEVEL_PREFIX /home/alex/NoeticLean/devel)
+  set(optitrack_motive_2_client_SOURCE_PREFIX /home/wayfarer/NoeticLean/src/optitrack_motive_2_client)
+  set(optitrack_motive_2_client_DEVEL_PREFIX /home/wayfarer/NoeticLean/devel)
   set(optitrack_motive_2_client_INSTALL_PREFIX "")
   set(optitrack_motive_2_client_PREFIX ${optitrack_motive_2_client_DEVEL_PREFIX})
 else()
   set(optitrack_motive_2_client_SOURCE_PREFIX "")
   set(optitrack_motive_2_client_DEVEL_PREFIX "")
-  set(optitrack_motive_2_client_INSTALL_PREFIX /home/alex/NoeticLean/install)
+  set(optitrack_motive_2_client_INSTALL_PREFIX /home/wayfarer/NoeticLean/install)
   set(optitrack_motive_2_client_PREFIX ${optitrack_motive_2_client_INSTALL_PREFIX})
 endif()
 
@@ -154,7 +154,7 @@ foreach(library ${libraries})
     set(lib_path "")
     set(lib "${library}-NOTFOUND")
     # since the path where the library is found is returned we have to iterate over the paths manually
-    foreach(path /home/alex/NoeticLean/install/lib;/opt/ros/noetic/lib)
+    foreach(path /home/wayfarer/NoeticLean/install/lib;/home/wayfarer/NoeticLean/devel/lib;/opt/ros/noetic/lib)
       find_library(lib ${library}
         PATHS ${path}
         NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
