@@ -5,6 +5,7 @@ from acl_msgs.msg import ViconState
 
 def callback(data):
     rospy.loginfo(rospy.get_caller_id() + "Vicon State data: %s", data.data)
+    print("Vicon State data: %s", data.data)
      
 def listener():
    
