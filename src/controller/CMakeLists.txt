@@ -167,6 +167,7 @@ include_directories(
 catkin_install_python(PROGRAMS
   scripts/controller_node.py
   scripts/publish_tf.py
+  scripts/motors.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 ## Mark executables for installation
