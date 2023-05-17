@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+  <!-- Load joy handler and config -->
+  <rosparam file="$(find controller)/params.yaml" command="load"/>
+  <node name="joy" pkg="joy" type="joy_node" output="screen"/>
+  <node name="joy_handler" pkg="controller" type="joy.py" output="screen"/>
+</launch>
