@@ -65,12 +65,14 @@ class IORecorder:
 
 		# Find derivatives
 		if len(self.times) > 0:
+			dt = t - self.times[-1]
+
 			prev_pos = self.positions[-1]
-			vel = (pos - prev_pos)/t
+			vel = (pos - prev_pos)/dt
 			prev_vel = self.velocities[-1]
-			acc = (vel - prev_vel)/t
+			acc = (vel - prev_vel)/dt
 			prev_theta = self.orientations[-1]
-			rate = (theta - prev_theta)/t
+			rate = (theta - prev_theta)/dt
 		else:
 			vel = [0,0,0]
 			acc = [0,0,0]
