@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+  <node name="optitrack_motive" pkg="optitrack_motive_2_client" type="optitrack_motive_2_client_node"
+    args="--server 192.168.1.12 --local 192.168.1.112"/>
+  <node name="vicon_tf_publisher" pkg="controller" type="publish_tf.py"/>
+
+  <!-- Run rviz -->
+  <node name="rviz" pkg="rviz" type="rviz"
+    args="-d $(find controller)/rviz/frames.rviz"/>
+</launch>
