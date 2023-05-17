@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+  <!-- Load config file -->
+  <rosparam file="$(find dd_control)/config.yaml" command="load"/>
+
+  <!-- Begin recording IO -->
+  <param name="/use_sim_time" value="true"/>
+  <node name="io_recorder" pkg="controller" type="io_recorder.py" output="screen"/>
+</launch>
