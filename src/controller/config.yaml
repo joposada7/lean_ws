@@ -1,3 +1,9 @@
 input_topic: /voltage
 vicon_topic: /vicon
 msg_arrival_threshold: 0.05 # seconds
+
+# Controller config
+left_wheel_motor: 4
+right_wheel_motor: 1
+left_vertical_motor: 2
+right_vertical_motor: 3

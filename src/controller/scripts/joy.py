@@ -26,6 +26,13 @@ class JoyHandler():
 
 		# Initialize all pins to default
 		self.motors = [Motor1PWM, Motor1Dir, Motor2PWM, Motor2Dir, Motor3PWM, Motor3Dir, Motor4PWM, Motor4Dir]
+
+		# Get indices as per config
+		self.LWM = rospy.get_param("left_wheel_motor")-1
+		self.RWM = rospy.get_param("right_wheel_motor")-1
+		self.LVM = rospy.get_param("left_vertical_motor")-1
+		self.RVM = rospy.get_param("right_vertical_motor")-1
+
 		for motor in self.motors:
 			GPIO.setup(motor, GPIO.OUT) # Initializes all pins as output
 			rospy.loginfo(f"Set {motor} as output")
@@ -34,35 +41,45 @@ class JoyHandler():
 
 		# Set SOFTWARE PWMs
 		motor_frequency = rospy.get_param("motor_frequency")
-		self.pwm1 = GPIO.PWM(self.motors[0], motor_frequency)
-		self.pwm2 = GPIO.PWM(self.motors[2], motor_frequency)
-		self.pwm3 = GPIO.PWM(self.motors[4], motor_frequency)
-		self.pwm4 = GPIO.PWM(self.motors[6], motor_frequency)
+		pwm1 = GPIO.PWM(self.motors[0], motor_frequency)
+		pwm2 = GPIO.PWM(self.motors[2], motor_frequency)
+		pwm3 = GPIO.PWM(self.motors[4], motor_frequency)
+		pwm4 = GPIO.PWM(self.motors[6], motor_frequency)
+
+		self.pwms = [pwm1, pwm2, pwm3, pwm4]
+		for pwm in self.pwms:
+			pwm.start(0)
 		print(f"PWMs set to {motor_frequency} Hz")
 
-		self.pwm1.start(0)
-		self.pwm2.start(0)
-		self.pwm3.start(0)
-		self.pwm4.start(0)
-
+		# Get parameters
 		self.KILL_SWITCH = rospy.get_param("joy_kill_switch")
-		self.joy_sub = rospy.Subscriber("joy", Joy, self.spin_motors)
+		self.DEADZONE = rospy.get_param("joy_deadzone")
+		self.LOW_THROTTLE = rospy.get_param("low_throttle")
+		self.HIGH_THROTTLE = rospy.get_param("high_throttle")
+
+		# Begin listening to joystick
+		self.joy_sub = rospy.Subscriber("joy", Joy, self.spin_motors, queue_size=1)
+		rospy.loginfo("JOY READY")
 
 	def spin_motors(self, msg):
 		linear = self.get_throttle(msg.axes[1]) # Up/down on LS
 		angular = self.get_throttle(msg.axes[3]) # Left/right on RS
 		vertical = self.get_throttle(msg.axes[4]) # Up/down on RS
 
-		ks = msg.buttons[self.KILL_SWITCH]
-		if not ks:
-			if any(i!=0 for i in [linear, angular, vertical]):
-				rospy.logwarn("Input ignored, kill switch not pressed!")
-			self.stop_motors()
-			return
+		if self.KILL_SWITCH >= 0:
+			ks = msg.buttons[self.KILL_SWITCH]
+			if not ks:
+				if any(i!=0 for i in [linear, angular, vertical]):
+					rospy.logwarn("Input ignored, kill switch not pressed!")
+				self.stop_motors(log=False)
+				return
 
 		if linear == 0.0 and angular == 0.0 and vertical == 0.0:
-			self.stop_motors() # Stop!
+			self.stop_motors(log=False) # Stop!
 			return
+
+		for pwm in self.pwms:
+			pwm.start(0)
 
 		if angular == 0.0:
 			self.forward_or_back(linear) # Linear only
@@ -70,36 +87,36 @@ class JoyHandler():
 			self.turn_in_place(angular) # Angular only
 		else:
 			# Blend inputs to turn while moving
+			scale = self.scale_angular(angular)
 			if linear > 0.0:
+				GPIO.output(self.motors[self.RWM*2+1], GPIO.LOW)
+				GPIO.output(self.motors[self.LWM*2+1], GPIO.LOW)
+
 				if angular > 0.0:
 					# Turning left moving forwards
-					GPIO.output(self.motors[0], GPIO.LOW)
-					GPIO.output(self.motors[2], GPIO.LOW)
-					self.pwm1.ChangeDutyCycle(linear)
-					self.pwm2.ChangeDutyCycle((1.0-angular)*linear)
-					rospy.loginfo(f"FORWARD LEFT")
+					self.pwms[self.RWM].ChangeDutyCycle(scale*linear)
+					self.pwms[self.LWM].ChangeDutyCycle(linear)
+					rospy.loginfo(f"FORWARD LEFT {round(linear,1)}%")
 				else:
 					# Turning right moving forwards
-					GPIO.output(self.motors[0], GPIO.LOW)
-					GPIO.output(self.motors[2], GPIO.LOW)
-					self.pwm1.ChangeDutyCycle((1.0-angular)*linear)
-					self.pwm2.ChangeDutyCycle(linear)
-					rospy.loginfo(f"FORWARD RIGHT")
+					self.pwms[self.RWM].ChangeDutyCycle(linear)
+					self.pwms[self.LWM].ChangeDutyCycle(scale*linear)
+					rospy.loginfo(f"FORWARD RIGHT {round(linear,1)}%")
 			else:
+				GPIO.output(self.motors[self.RWM*2+1], GPIO.HIGH)
+				GPIO.output(self.motors[self.LWM*2+1], GPIO.HIGH)
+
+				linear = abs(linear)
 				if angular > 0.0:
 					# Turning left moving backwards
-					GPIO.output(self.motors[0], GPIO.HIGH)
-					GPIO.output(self.motors[2], GPIO.HIGH)
-					self.pwm1.ChangeDutyCycle(100-linear)
-					self.pwm2.ChangeDutyCycle(100-(1.0-angular)*linear)
-					rospy.loginfo(f"BACKWARD LEFT")
+					self.pwms[0].ChangeDutyCycle(100-linear)
+					self.pwms[1].ChangeDutyCycle(100-scale*linear)
+					rospy.loginfo(f"BACKWARD LEFT {round(linear,1)}%")
 				else:
 					# Turning right moving backwards
-					GPIO.output(self.motors[0], GPIO.HIGH)
-					GPIO.output(self.motors[2], GPIO.HIGH)
-					self.pwm1.ChangeDutyCycle(100-(1.0-angular)*linear)
-					self.pwm2.ChangeDutyCycle(100-linear)
-					rospy.loginfo(f"BACKWARD RIGHT")
+					self.pwms[0].ChangeDutyCycle(100-scale*linear)
+					self.pwms[1].ChangeDutyCycle(100-linear)
+					rospy.loginfo(f"BACKWARD RIGHT {round(linear,1)}%")
 
 		if vertical != 0.0:
 			self.up_or_down(vertical)
@@ -109,74 +126,107 @@ class JoyHandler():
 		Move only forward or backward.
 		"""
 		if throttle > 0.0:
-			GPIO.output(self.motors[0], GPIO.LOW)
-			GPIO.output(self.motors[2], GPIO.LOW)
-			self.pwm1.ChangeDutyCycle(throttle)
-			self.pwm2.ChangeDutyCycle(throttle)
-			rospy.loginfo(f"FORWARD {throttle}%")
+			GPIO.output(self.motors[self.RWM*2+1], GPIO.LOW)
+			GPIO.output(self.motors[self.LWM*2+1], GPIO.LOW)
+			self.pwms[self.RWM].ChangeDutyCycle(throttle)
+			self.pwms[self.LWM].ChangeDutyCycle(throttle)
+			rospy.loginfo(f"FORWARD {round(throttle,1)}%")
 		elif throttle < 0.0:
-			GPIO.output(self.motors[0], GPIO.HIGH)
-			GPIO.output(self.motors[2], GPIO.HIGH)
-			self.pwm1.ChangeDutyCycle(100-throttle)
-			self.pwm2.ChangeDutyCycle(100-throttle)
-			rospy.loginfo(f"BACKWARD {throttle}%")
+			throttle = abs(throttle)
+			GPIO.output(self.motors[self.RWM*2+1], GPIO.HIGH)
+			GPIO.output(self.motors[self.LWM*2+1], GPIO.HIGH)
+			self.pwms[self.RWM].ChangeDutyCycle(100-throttle)
+			self.pwms[self.LWM].ChangeDutyCycle(100-throttle)
+			rospy.loginfo(f"BACKWARD {round(throttle,1)}%")
 
 	def turn_in_place(self, throttle):
 		"""
 		Turn in place only.
 		"""
-		if throttle > 0.0:
-			GPIO.output(self.motors[0], GPIO.LOW)
-			GPIO.output(self.motors[2], GPIO.HIGH)
-			self.pwm1.ChangeDutyCycle(throttle)
-			self.pwm2.ChangeDutyCycle(100-throttle)
-			rospy.loginfo(f"TURN LEFT {throttle}%")
-		elif throttle < 0.0:
-			GPIO.output(self.motors[0], GPIO.HIGH)
-			GPIO.output(self.motors[2], GPIO.LOW)
-			self.pwm1.ChangeDutyCycle(100-throttle)
-			self.pwm2.ChangeDutyCycle(throttle)
-			rospy.loginfo(f"TURN RIGHT {throttle}%")
+		if throttle < 0.0:
+			throttle = abs(throttle)
+			GPIO.output(self.motors[self.RWM*2+1], GPIO.LOW)
+			GPIO.output(self.motors[self.LWM*2+1], GPIO.HIGH)
+			self.pwms[self.RWM].ChangeDutyCycle(throttle)
+			self.pwms[self.LWM].ChangeDutyCycle(100-throttle)
+			rospy.loginfo(f"TURN RIGHT {round(throttle,1)}%")
+		elif throttle > 0.0:
+			GPIO.output(self.motors[self.RWM*2+1], GPIO.HIGH)
+			GPIO.output(self.motors[self.LWM*2+1], GPIO.LOW)
+			self.pwms[self.RWM].ChangeDutyCycle(100-throttle)
+			self.pwms[self.LWM].ChangeDutyCycle(throttle)
+			rospy.loginfo(f"TURN LEFT {round(throttle,1)}%")
 
 	def up_or_down(self, throttle):
 		"""
 		Move only up or down.
 		"""
 		if throttle > 0.0:
-			GPIO.output(self.motors[4], GPIO.LOW)
-			GPIO.output(self.motors[6], GPIO.LOW)
-			self.pwm1.ChangeDutyCycle(throttle)
-			self.pwm2.ChangeDutyCycle(throttle)
-			rospy.loginfo(f"UP {throttle}%")
+			GPIO.output(self.motors[self.LVM*2+1], GPIO.LOW)
+			GPIO.output(self.motors[self.RVM*2+1], GPIO.LOW)
+			self.pwms[self.LVM].ChangeDutyCycle(throttle)
+			self.pwms[self.RVM].ChangeDutyCycle(throttle)
+			rospy.loginfo(f"UP {round(throttle,1)}%")
 		elif throttle < 0.0:
-			GPIO.output(self.motors[4], GPIO.HIGH)
-			GPIO.output(self.motors[6], GPIO.HIGH)
-			self.pwm1.ChangeDutyCycle(100-throttle)
-			self.pwm2.ChangeDutyCycle(100-throttle)
-			rospy.loginfo(f"DOWN {throttle}%")
+			throttle = abs(throttle)
+			GPIO.output(self.motors[self.LVM*2+1], GPIO.HIGH)
+			GPIO.output(self.motors[self.RVM*2+1], GPIO.HIGH)
+			self.pwms[self.LVM].ChangeDutyCycle(100-throttle)
+			self.pwms[self.RVM].ChangeDutyCycle(100-throttle)
+			rospy.loginfo(f"DOWN {round(throttle,1)}%")
 
 	def get_throttle(self, axis_measure):
 		"""
 		Get (signed) throttle from joystick axis measurement.
 		"""
-		return axis_measure*100
+		if abs(axis_measure) < self.DEADZONE:
+			# No throttle in deadzone
+			return 0
 
-	def stop_motors(self):
+		# Map joystick movement to desired throttle range
+		m = float(self.HIGH_THROTTLE-self.LOW_THROTTLE)/(1.0-self.DEADZONE)
+		if axis_measure > 0:
+			scaled = m*(axis_measure - self.DEADZONE) + self.LOW_THROTTLE
+			return scaled
+		else:
+			scaled = m*(axis_measure + self.DEADZONE) - self.LOW_THROTTLE
+			return scaled 
+
+	def scale_angular(self, angular):
+		"""
+		Map angular measurement from usual throttle range to allow for turning while moving.
+		"""
+		high = 0.50
+		low = 1.0
+		original_range = self.HIGH_THROTTLE-self.LOW_THROTTLE
+		new_range = high-low
+
+		scaled = (abs(angular) - self.LOW_THROTTLE)/original_range
+		mapped = low + (scaled * new_range)
+		return mapped
+
+	def stop_motors(self, log=True):
 		"""
 		Stop all motors by setting GPIO to low and stopping PWM.
 		"""
 		for motor in self.motors:
 			GPIO.output(motor, GPIO.LOW)
-			rospy.loginfo(f"Set {motor} to low")
-		self.pwm1.stop(0)
-		self.pwm2.stop(0)
-		self.pwm3.stop(0)
-		self.pwm4.stop(0)
-		rospy.loginfo("Stopped all motors!")
+		for pwm in self.pwms:
+			pwm.stop(0)
+		if log:
+			rospy.loginfo("Stopped all motors!")
+
+	def cleanup_motors(self):
+		"""
+		Stop motors and clean up GPIO.
+		"""
+		self.stop_motors()
+		GPIO.cleanup()
+		rospy.loginfo("GPIO cleaned up, shutting down.")
 
 
 if __name__ == '__main__':
 	rospy.init_node("joy_handler")
 	jh = JoyHandler()
-	rospy.on_shutdown(jh.stop_motors()) # Stop motors on node shutdown
+	rospy.on_shutdown(jh.cleanup_motors) # Stop motors on node shutdown
 	rospy.spin()

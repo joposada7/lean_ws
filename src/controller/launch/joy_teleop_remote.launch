@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+  <!-- Launch logger -->
+  <node name="roslogger" pkg="controller" type="roslogger.py" output="screen"/>
+
+  <!-- Launch joy_node on local machine -->
+  <node name="joy" pkg="joy" type="joy_node" output="screen"/>
+
+  <!-- Load config and parameters -->
+  <rosparam file="$(find controller)/config.yaml" command="load"/>
+  <rosparam file="$(find controller)/params.yaml" command="load"/>
+
+  <!-- Command-line arguments for remote machine, defaults to wayfarer opts -->
+  <arg name="user" default="wayfarer"/>
+  <arg name="ip" default="192.168.50.105"/>
+
+  <!-- Launch remotely, assuming there is an /env/user_env.sh script -->
+  <machine name="lean" address="$(arg ip)" user="$(arg user)" env-loader="/home/wayfarer/NoeticLean/src/controller/env/$(arg user)_env.sh"/>
+  <node machine="lean" name="joy_handler" pkg="controller" type="joy.py" output="screen"/>
+</launch>

@@ -1,2 +1,7 @@
-joy_kill_switch: 5
+joy_kill_switch: -1 # -1 to disable
+joy_deadzone: 0.01 # deadzone in [0,1]
+
 motor_frequency: 2000 # Hz
+
+low_throttle: 50 # %, for lowest speed
+high_throttle: 100 # %, for highest speed

@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <launch>
-  <!-- Load joy handler and config -->
+  <!-- NOTE: joy_node must be ran on local machine connected to this robot! -->
+
+  <!-- Load config and parameters -->
+  <rosparam file="$(find controller)/config.yaml" command="load"/>
   <rosparam file="$(find controller)/params.yaml" command="load"/>
-  <node name="joy" pkg="joy" type="joy_node" output="screen"/>
+
+  <!-- Launch joy handler -->
   <node name="joy_handler" pkg="controller" type="joy.py" output="screen"/>
 </launch>
