@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import rospy
+from std_msgs.msg import Float64
 from sensor_msgs.msg import Joy
 
 import RPi.GPIO as GPIO
@@ -61,6 +62,10 @@ class JoyHandler():
 		self.joy_sub = rospy.Subscriber("joy", Joy, self.spin_motors, queue_size=1)
 		rospy.loginfo("JOY READY")
 
+		# Publish duty cycles for IO
+		self.LWM_pub = rospy.Publisher("lwm_duty_cycle", Float64, queue_size=1)
+		self.RWM_pub = rospy.Publisher("rwm_duty_cycle", Float64, queue_size=1)
+
 	def spin_motors(self, msg):
 		linear = self.get_throttle(msg.axes[1]) # Up/down on LS
 		angular = self.get_throttle(msg.axes[3]) # Left/right on RS
@@ -97,11 +102,17 @@ class JoyHandler():
 					self.pwms[self.RWM].ChangeDutyCycle(scale*linear)
 					self.pwms[self.LWM].ChangeDutyCycle(linear)
 					rospy.loginfo(f"FORWARD LEFT {round(linear,1)}%")
+
+					self.RWM_pub.publish(data=self.duty_cycle_to_input(scale*linear))
+					self.LWM_pub.publish(data=self.duty_cycle_to_input(linear))
 				else:
 					# Turning right moving forwards
 					self.pwms[self.RWM].ChangeDutyCycle(linear)
 					self.pwms[self.LWM].ChangeDutyCycle(scale*linear)
 					rospy.loginfo(f"FORWARD RIGHT {round(linear,1)}%")
+
+					self.RWM_pub.publish(data=self.duty_cycle_to_input(linear))
+					self.LWM_pub.publish(data=self.duty_cycle_to_input(scale*linear))
 			else:
 				GPIO.output(self.motors[self.RWM*2+1], GPIO.HIGH)
 				GPIO.output(self.motors[self.LWM*2+1], GPIO.HIGH)
@@ -112,11 +123,17 @@ class JoyHandler():
 					self.pwms[0].ChangeDutyCycle(100-linear)
 					self.pwms[1].ChangeDutyCycle(100-scale*linear)
 					rospy.loginfo(f"BACKWARD LEFT {round(linear,1)}%")
+
+					self.RWM_pub.publish(data=self.duty_cycle_to_input(scale*linear, reverse=True))
+					self.LWM_pub.publish(data=self.duty_cycle_to_input(linear, reverse=True))
 				else:
 					# Turning right moving backwards
 					self.pwms[0].ChangeDutyCycle(100-scale*linear)
 					self.pwms[1].ChangeDutyCycle(100-linear)
 					rospy.loginfo(f"BACKWARD RIGHT {round(linear,1)}%")
+
+					self.RWM_pub.publish(data=self.duty_cycle_to_input(linear, reverse=True))
+					self.LWM_pub.publish(data=self.duty_cycle_to_input(scale*linear, reverse=True))
 
 		if vertical != 0.0:
 			self.up_or_down(vertical)
@@ -131,6 +148,9 @@ class JoyHandler():
 			self.pwms[self.RWM].ChangeDutyCycle(throttle)
 			self.pwms[self.LWM].ChangeDutyCycle(throttle)
 			rospy.loginfo(f"FORWARD {round(throttle,1)}%")
+
+			self.RWM_pub.publish(data=self.duty_cycle_to_input(throttle))
+			self.LWM_pub.publish(data=self.duty_cycle_to_input(throttle))
 		elif throttle < 0.0:
 			throttle = abs(throttle)
 			GPIO.output(self.motors[self.RWM*2+1], GPIO.HIGH)
@@ -138,6 +158,9 @@ class JoyHandler():
 			self.pwms[self.RWM].ChangeDutyCycle(100-throttle)
 			self.pwms[self.LWM].ChangeDutyCycle(100-throttle)
 			rospy.loginfo(f"BACKWARD {round(throttle,1)}%")
+
+			self.RWM_pub.publish(data=self.duty_cycle_to_input(throttle, reverse=True))
+			self.LWM_pub.publish(data=self.duty_cycle_to_input(throttle, reverse=True))
 
 	def turn_in_place(self, throttle):
 		"""
@@ -150,12 +173,18 @@ class JoyHandler():
 			self.pwms[self.RWM].ChangeDutyCycle(throttle)
 			self.pwms[self.LWM].ChangeDutyCycle(100-throttle)
 			rospy.loginfo(f"TURN RIGHT {round(throttle,1)}%")
+
+			self.RWM_pub.publish(data=self.duty_cycle_to_input(throttle))
+			self.LWM_pub.publish(data=self.duty_cycle_to_input(throttle, reverse=True))
 		elif throttle > 0.0:
 			GPIO.output(self.motors[self.RWM*2+1], GPIO.HIGH)
 			GPIO.output(self.motors[self.LWM*2+1], GPIO.LOW)
 			self.pwms[self.RWM].ChangeDutyCycle(100-throttle)
 			self.pwms[self.LWM].ChangeDutyCycle(throttle)
 			rospy.loginfo(f"TURN LEFT {round(throttle,1)}%")
+
+			self.RWM_pub.publish(data=self.duty_cycle_to_input(throttle, reverse=True))
+			self.LWM_pub.publish(data=self.duty_cycle_to_input(throttle))
 
 	def up_or_down(self, throttle):
 		"""
@@ -167,6 +196,8 @@ class JoyHandler():
 			self.pwms[self.LVM].ChangeDutyCycle(throttle)
 			self.pwms[self.RVM].ChangeDutyCycle(throttle)
 			rospy.loginfo(f"UP {round(throttle,1)}%")
+
+			# TODO
 		elif throttle < 0.0:
 			throttle = abs(throttle)
 			GPIO.output(self.motors[self.LVM*2+1], GPIO.HIGH)
@@ -174,6 +205,8 @@ class JoyHandler():
 			self.pwms[self.LVM].ChangeDutyCycle(100-throttle)
 			self.pwms[self.RVM].ChangeDutyCycle(100-throttle)
 			rospy.loginfo(f"DOWN {round(throttle,1)}%")
+
+			# TODO
 
 	def get_throttle(self, axis_measure):
 		"""
@@ -205,6 +238,22 @@ class JoyHandler():
 		mapped = low + (scaled * new_range)
 		return mapped
 
+	def duty_cycle_to_input(self, duty_cycle, reverse=False):
+		"""
+		Maps given duty cycle from [-HIGH, -LOW]U[LOW,HIGH] to [-100,100].
+		"""
+		if duty_cycle == 0.0:
+			return 0.0
+
+		original_range = self.HIGH_THROTTLE-self.LOW_THROTTLE
+		scaled = (abs(duty_cycle) - self.LOW_THROTTLE)/original_range
+		mapped = scaled*100.0
+
+		if reverse:
+			return -1*mapped
+		else:
+			return mapped
+
 	def stop_motors(self, log=True):
 		"""
 		Stop all motors by setting GPIO to low and stopping PWM.
@@ -213,6 +262,9 @@ class JoyHandler():
 			GPIO.output(motor, GPIO.LOW)
 		for pwm in self.pwms:
 			pwm.stop(0)
+
+			self.RWM_pub.publish(data=0.0)
+			self.LWM_pub.publish(data=0.0)
 		if log:
 			rospy.loginfo("Stopped all motors!")
 
