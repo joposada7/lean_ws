@@ -1,10 +1,11 @@
-lwm_topic: /lwm_inputs
-rwm_topic: /rwm_inputs
-vicon_topic: /vicon
+# IO Recorder config
 msg_arrival_threshold: 0.05 # seconds
 
 # Controller config
-left_wheel_motor: 4
+left_wheel_motor: 2
 right_wheel_motor: 1
-left_vertical_motor: 2
+left_vertical_motor: 4
 right_vertical_motor: 3
+# shrimp:   4 1 2 3
+# bean:     2 1 4 3
+# wayfarer: ? ? ? ?

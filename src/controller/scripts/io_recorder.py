@@ -19,14 +19,14 @@ class IORecorder:
 
 	def __init__(self):
 		now = rospy.Time.now()
-		self.t0 = now.secs + (float(rospy.Time.now().nsecs)/10e9)
+		self.t0 = now.secs + (float(rospy.Time.now().nsecs)/10e9) # Record start of node as time t=0
 
 		# Store data
 		self.times_i = []
 		self.lwm_inputs = []
 		self.rwm_inputs = []
-		self.lwm_duty_cycles = []
-		self.rwm_duty_cycles = []
+		self.lvm_inputs = []
+		self.rvm_inputs = []
 
 		self.times_o = []
 		self.positions = []
@@ -34,28 +34,24 @@ class IORecorder:
 		self.accelerations = []
 		self.orientations = []
 		self.rotation_rates = []
-		self.angular_velocity_single_wheel = []
+		self.angular_velocity = []
 
 		# Outputs
-		VICON_TOPIC = rospy.get_param("vicon_topic")
-		pose_sub = rospy.Subscriber(VICON_TOPIC, ViconState, self.record_pose_only)
+		pose_sub = rospy.Subscriber("vicon", ViconState, self.record_pose_only)
 
 		# Inputs
-		LWM_TOPIC = rospy.get_param("lwm_topic")
-		RWM_TOPIC = rospy.get_param("rwm_topic")
-		lwm_sub = message_filters.Subscriber(LWM_TOPIC, Float64)
-		rwm_sub = message_filters.Subscriber(RWM_TOPIC, Float64)
-		lwm_duty_cycle_sub = message_filters.Subscriber("lwm_duty_cycle", Float64)
-		rwm_duty_cycle_sub = message_filters.Subscriber("rwm_duty_cycle", Float64)
+		lwm_sub = message_filters.Subscriber("lwm_input", Float64)
+		rwm_sub = message_filters.Subscriber("rwm_input", Float64)
+		lvm_sub = message_filters.Subscriber("lvm_input", Float64)
+		rvm_sub = message_filters.Subscriber("rvm_input", Float64)
 		THRESHOLD = rospy.get_param("msg_arrival_threshold")
-		# self.ts = message_filters.ApproximateTimeSynchronizer([lwm_sub, rwm_sub], queue_size=1, slop=THRESHOLD, allow_headerless=True)
-		self.ts = message_filters.ApproximateTimeSynchronizer([lwm_duty_cycle_sub, rwm_duty_cycle_sub], queue_size=1, slop=THRESHOLD, allow_headerless=True)
+		self.ts = message_filters.ApproximateTimeSynchronizer([lwm_sub, rwm_sub, lvm_sub, rvm_sub], queue_size=1, slop=THRESHOLD, allow_headerless=True)
 		self.ts.registerCallback(self.record_input_only)
 
 		rospy.on_shutdown(self.write_to_file) # Register shutdown hook
 		rospy.loginfo("Ready to log!")
 
-	def record_input_only(self, msg_lwm, msg_rwm):
+	def record_input_only(self, msg_lwm, msg_rwm, msg_lvm, msg_rvm):
 		"""
 		Record and store inputs from lwm and rwm.
 			- msg_lwm: std_msgs/Float64
@@ -69,6 +65,8 @@ class IORecorder:
 		self.times_i.append(t)
 		self.lwm_inputs.append(msg_lwm.data)
 		self.rwm_inputs.append(msg_rwm.data)
+		self.lvm_inputs.append(msg_lvm.data)
+		self.rvm_inputs.append(msg_rvm.data)
 
 	def record_pose_only(self, msg):
 		"""
@@ -111,15 +109,18 @@ class IORecorder:
 		self.accelerations.append(acc)
 		self.orientations.append(theta)
 		self.rotation_rates.append(rate)
-		self.angular_velocity_single_wheel.append(omega)
+		self.angular_velocity.append(omega)
 
 	def write_to_file(self):
 		"""
 		Write all the data 2 large .csv files within the data directory corresponding to this run.
 		"""
+		pos = np.array(self.positions)
+		vel = np.array(self.velocities)
+		acc = np.array(self.accelerations)
+
 		data_i = np.c_[self.times_i, self.lwm_inputs, self.rwm_inputs]
-		# data_o = np.c_[self.times_o, self.positions, self.velocities, self.accelerations, self.orientations, self.rotation_rates]
-		data_o = np.c_[self.times_o, self.angular_velocity_single_wheel]
+		data_o = np.c_[self.times_o, pos[:,0], pos[:,1], pos[:,2], vel[:,0], vel[:,1], vel[:,2], acc[:,0], acc[:,1], acc[:,2], self.orientations, self.rotation_rates, self.angular_velocity]
 
 		d = os.path.dirname(__file__)
 		datapath = os.path.join(d,'..','data')
@@ -139,8 +140,7 @@ class IORecorder:
 		output_path = os.path.join(d,'..','data','outputs-'+filename+'.csv')
 		with open(output_path, 'w+', newline='') as f:
 			w = csv.writer(f)
-			# w.writerow(["t", "x", "y", "z", "vx", "vy", "vz", "ax", "ay", "az", "theta", "theta_dot"]) # Header
-			w.writerow(["t","omega"])
+			w.writerow(["t", "x", "y", "z", "vx", "vy", "vz", "ax", "ay", "az", "theta", "theta_dot", "omega"]) # Header
 			w.writerows(data_o)
 		rospy.loginfo("Logged output data into " + output_path + "!")
 
