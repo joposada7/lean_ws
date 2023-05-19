@@ -14,7 +14,7 @@ export ROS_IP=$(hostname -I)
 export ROS_MASTER_URI=http://192.168.50.84:11311
 
 # set _CATKIN_SETUP_DIR
-_CATKIN_SETUP_DIR=/home/perc/NoeticLean/devel
+_CATKIN_SETUP_DIR=/home/shrimp/NoeticLean/devel
 
 # source setup.sh from devel
 # . /opt/ros/noetic/setup.sh
