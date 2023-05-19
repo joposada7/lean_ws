@@ -25,6 +25,8 @@ class IORecorder:
 		self.times_i = []
 		self.lwm_inputs = []
 		self.rwm_inputs = []
+		self.lwm_duty_cycles = []
+		self.rwm_duty_cycles = []
 
 		self.times_o = []
 		self.positions = []
@@ -32,6 +34,7 @@ class IORecorder:
 		self.accelerations = []
 		self.orientations = []
 		self.rotation_rates = []
+		self.angular_velocity_single_wheel = []
 
 		# Outputs
 		VICON_TOPIC = rospy.get_param("vicon_topic")
@@ -42,55 +45,15 @@ class IORecorder:
 		RWM_TOPIC = rospy.get_param("rwm_topic")
 		lwm_sub = message_filters.Subscriber(LWM_TOPIC, Float64)
 		rwm_sub = message_filters.Subscriber(RWM_TOPIC, Float64)
+		lwm_duty_cycle_sub = message_filters.Subscriber("lwm_duty_cycle", Float64)
+		rwm_duty_cycle_sub = message_filters.Subscriber("rwm_duty_cycle", Float64)
 		THRESHOLD = rospy.get_param("msg_arrival_threshold")
-		self.ts = message_filters.ApproximateTimeSynchronizer([lwm_sub, rwm_sub], queue_size=1, slop=THRESHOLD, allow_headerless=True)
+		# self.ts = message_filters.ApproximateTimeSynchronizer([lwm_sub, rwm_sub], queue_size=1, slop=THRESHOLD, allow_headerless=True)
+		self.ts = message_filters.ApproximateTimeSynchronizer([lwm_duty_cycle_sub, rwm_duty_cycle_sub], queue_size=1, slop=THRESHOLD, allow_headerless=True)
 		self.ts.registerCallback(self.record_input_only)
 
 		rospy.on_shutdown(self.write_to_file) # Register shutdown hook
 		rospy.loginfo("Ready to log!")
-
-	def record(self, i_msg, o_msg):
-		"""
-		Record input/output and calculate useful states.
-			- i_msg: std_msgs/Float64
-			- o_msg: acl_msgs/ViconState
-		"""
-		# Timestamp
-		now = rospy.Time.now()
-		t = now.secs + (float(rospy.Time.now().nsecs)/10e9) - self.t0
-
-		# Input
-		i = 0.0
-		rospy.logwarn("No input found!!")
-
-		# Current pose
-		p = o_msg.pose.position
-		pos = np.array([p.x, p.y, p.z])
-		o = o_msg.pose.orientation
-		theta = tf.transformations.euler_from_quaternion([o.x, o.y, o.z, o.w])[2]
-
-		# Find derivatives
-		if len(self.times_o) > 0:
-			dt = t - self.times_o[-1]
-
-			prev_pos = self.positions[-1]
-			vel = (pos - prev_pos)/dt
-			prev_vel = self.velocities[-1]
-			acc = (vel - prev_vel)/dt
-			prev_theta = self.orientations[-1]
-			rate = (theta - prev_theta)/dt
-		else:
-			vel = [0,0,0]
-			acc = [0,0,0]
-			rate = 0
-
-		# Store
-		self.times_o.append(t)
-		self.positions.append(pos)
-		self.velocities.append(vel)
-		self.accelerations.append(acc)
-		self.orientations.append(theta)
-		self.rotation_rates.append(rate)
 
 	def record_input_only(self, msg_lwm, msg_rwm):
 		"""
@@ -113,7 +76,8 @@ class IORecorder:
 			- msg: acl_msgs/ViconState
 		"""
 		# Timestamp
-		t = rospy.Time.now().secs
+		now = rospy.Time.now()
+		t = now.secs + (float(rospy.Time.now().nsecs)/10e9) - self.t0
 
 		# Current pose
 		p = msg.pose.position
@@ -123,16 +87,22 @@ class IORecorder:
 
 		# Find derivatives
 		if len(self.times_o) > 0:
+			dt = t - self.times_o[-1]
+
 			prev_pos = self.positions[-1]
-			vel = (pos - prev_pos)/t
+			vel = (pos - prev_pos)/dt
 			prev_vel = self.velocities[-1]
-			acc = (vel - prev_vel)/t
+			acc = (vel - prev_vel)/dt
 			prev_theta = self.orientations[-1]
-			rate = (theta - prev_theta)/t
+			rate = (theta - prev_theta)/dt
+
+			RADIUS = 0.0127 # meters
+			omega = np.linalg.norm(vel)/RADIUS
 		else:
 			vel = [0,0,0]
 			acc = [0,0,0]
 			rate = 0
+			omega = 0
 
 		# Store
 		self.times_o.append(t)
@@ -141,13 +111,15 @@ class IORecorder:
 		self.accelerations.append(acc)
 		self.orientations.append(theta)
 		self.rotation_rates.append(rate)
+		self.angular_velocity_single_wheel.append(omega)
 
 	def write_to_file(self):
 		"""
 		Write all the data 2 large .csv files within the data directory corresponding to this run.
 		"""
 		data_i = np.c_[self.times_i, self.lwm_inputs, self.rwm_inputs]
-		data_o = np.c_[self.times_o, self.positions, self.velocities, self.accelerations, self.orientations, self.rotation_rates]
+		# data_o = np.c_[self.times_o, self.positions, self.velocities, self.accelerations, self.orientations, self.rotation_rates]
+		data_o = np.c_[self.times_o, self.angular_velocity_single_wheel]
 
 		d = os.path.dirname(__file__)
 		datapath = os.path.join(d,'..','data')
@@ -167,7 +139,8 @@ class IORecorder:
 		output_path = os.path.join(d,'..','data','outputs-'+filename+'.csv')
 		with open(output_path, 'w+', newline='') as f:
 			w = csv.writer(f)
-			w.writerow(["t", "x", "y", "z", "vx", "vy", "vz", "ax", "ay", "az", "theta", "theta_dot"]) # Header
+			# w.writerow(["t", "x", "y", "z", "vx", "vy", "vz", "ax", "ay", "az", "theta", "theta_dot"]) # Header
+			w.writerow(["t","omega"])
 			w.writerows(data_o)
 		rospy.loginfo("Logged output data into " + output_path + "!")
 

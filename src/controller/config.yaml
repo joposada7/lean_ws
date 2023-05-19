@@ -1,5 +1,5 @@
-lwm_topic: /lwm_duty_cycle
-rwm_topic: /rwm_duty_cycle
+lwm_topic: /lwm_inputs
+rwm_topic: /rwm_inputs
 vicon_topic: /vicon
 msg_arrival_threshold: 0.05 # seconds
 

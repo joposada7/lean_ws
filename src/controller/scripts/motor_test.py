@@ -2,6 +2,11 @@
 import RPi.GPIO as GPIO
 from time import sleep
 
+THROTTLE = 70 # % of Duty Cycle
+REVERSE1 = False
+REVERSE4 = False
+RUN_FOR = 5 # seconds
+
 GPIO.setmode(GPIO.BCM)
 
 Motor1PWM = 20
@@ -24,16 +29,12 @@ pwm1 = GPIO.PWM(motors[0], 2000)
 pwm2 = GPIO.PWM(motors[2], 2000)
 pwm3 = GPIO.PWM(motors[4], 2000)
 pwm4 = GPIO.PWM(motors[6], 2000)
-print('set pwms')
+print('Set pwms')
 
 pwm1.start(0)
 pwm2.start(0)
 pwm3.start(0)
 pwm4.start(0)
-
-THROTTLE = 100
-REVERSE1 = True
-REVERSE4 = True
 
 if REVERSE1:
     GPIO.output(Motor1Dir, GPIO.HIGH)
@@ -49,7 +50,7 @@ else:
     GPIO.output(Motor4Dir, GPIO.LOW)
     pwm4.ChangeDutyCycle(THROTTLE)
 
-sleep(15)
+sleep(RUN_FOR)
 
 for motor in motors:
     GPIO.output(motor, GPIO.LOW)
@@ -58,3 +59,5 @@ pwm1.stop(0)
 pwm2.stop(0)
 pwm3.stop(0)
 pwm4.stop(0)
+print("Stopped motors")
+
