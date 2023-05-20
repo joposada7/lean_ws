@@ -1,0 +1,12 @@
+<library path="src">
+  <class name="My Plugin" type="rqt_mypkg.my_module.MyPlugin" base_class_type="rqt_gui_py::Plugin">
+    <description>
+      An example Python GUI plugin to create a great user interface.
+    </description>
+    <qtgui>
+      <label>Voltage Plugin</label>
+      <icon type="theme">system-help</icon>
+      <statustip>GUI to provide votltage value.</statustip>
+    </qtgui>
+  </class>
+</library>
