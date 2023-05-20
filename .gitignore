@@ -1,0 +1,7 @@
+# Ignore all ROS build related files and directories
+build/
+devel/
+.catkin_workspace
+.rosinstall
+.vscode/
+
