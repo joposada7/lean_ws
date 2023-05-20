@@ -37,6 +37,10 @@ class MyPlugin(Plugin):
         # Give QObjects reasonable names
         self._widget = QWidget()
         self._widget.resize(680, 240)
+        button = QPushButton(()
+        QApplication.translate("childwidget", "Press me"), window)
+        button.move(100, 100)
+        button.show()
         self._widget.setObjectName('MyPluginUi')
         # Show _widget.windowTitle on left-top of each plugin (when 
         # it's set in _widget). This is useful when you open multiple 
