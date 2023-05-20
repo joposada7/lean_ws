@@ -55,7 +55,7 @@ class MyPlugin(Plugin):
 
     def callback(self, data):  # This is the CallBack function called after subscribing the topic, to use the data
         self._widget.Test.setText(str(data.linear.x))
-
+        self._widget.update()
 
     def shutdown_plugin(self):
         # TODO unregister all publishers here
