@@ -2,6 +2,9 @@ import os
 import rospy
 import rospkg
 
+from std_msgs.msg import Float32
+from geometry_msgs.msg import Twist
+
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 from python_qt_binding.QtWidgets import QWidget
@@ -26,21 +29,15 @@ class MyPlugin(Plugin):
             print('arguments: ', args)
             print ('unknowns: ', unknowns)
 
-        # # Create QWidget
-        # self._widget = QWidget()
-        # # Get path to UI file which should be in the "resource" folder of this package
-        # ui_file = os.path.join(rospkg.RosPack().get_path('gui'), 'resource', 'MyPlugin.ui')
-        # # Extend the widget with all attributes and children from UI file
-        # loadUi(ui_file, self._widget)
-        # # loadUi(ui_file, self, {'TopicWidget': TopicWidget})
+        # Create QWidget
+        self._widget = QWidget()
+        # Get path to UI file which should be in the "resource" folder of this package
+        ui_file = os.path.join(rospkg.RosPack().get_path('gui'), 'resource', 'MyPlugin.ui')
+        # Extend the widget with all attributes and children from UI file
+        loadUi(ui_file, self._widget)
+        # loadUi(ui_file, self, {'TopicWidget': TopicWidget})
         
         # Give QObjects reasonable names
-        self._widget = QWidget()
-        self._widget.resize(680, 240)
-        button = QPushButton(()
-        QApplication.translate("childwidget", "Press me"), window)
-        button.move(100, 100)
-        button.show()
         self._widget.setObjectName('MyPluginUi')
         # Show _widget.windowTitle on left-top of each plugin (when 
         # it's set in _widget). This is useful when you open multiple 
@@ -51,6 +48,14 @@ class MyPlugin(Plugin):
             self._widget.setWindowTitle(self._widget.windowTitle() + (' (%d)' % context.serial_number()))
         # Add widget to the user interface
         context.add_widget(self._widget)
+
+    def get_subscriber(self):
+        rospy.Subscriber('cmd_vel', Twist, self.callback)  # subscribe to the whatsapp topic and get the message
+        rospy.spin()
+
+    def callback(self, data):  # This is the CallBack function called after subscribing the topic, to use the data
+        self._widget.text.setText(str(data.linear.x))
+
 
     def shutdown_plugin(self):
         # TODO unregister all publishers here
