@@ -22,9 +22,6 @@
      <height>27</height>
     </rect>
    </property>
-   <property name="text">
-    <string>Voltage3</string>
-   </property>
   </widget>
  </widget>
  <resources/>
