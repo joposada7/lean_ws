@@ -48,12 +48,14 @@ class MyPlugin(Plugin):
             self._widget.setWindowTitle(self._widget.windowTitle() + (' (%d)' % context.serial_number()))
         # Add widget to the user interface
         context.add_widget(self._widget)
+        self.get_subscriber()
 
     def get_subscriber(self):
         rospy.Subscriber('cmd_vel', Twist, self.callback)  # subscribe to the whatsapp topic and get the message
         rospy.spin()
 
     def callback(self, data):  # This is the CallBack function called after subscribing the topic, to use the data
+        print(data)
         self._widget.Test.setText(str(data.linear.x))
         self._widget.update()
 
