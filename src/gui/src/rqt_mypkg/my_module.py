@@ -26,15 +26,17 @@ class MyPlugin(Plugin):
             print('arguments: ', args)
             print ('unknowns: ', unknowns)
 
-        # Create QWidget
-        self._widget = QWidget()
-        # Get path to UI file which should be in the "resource" folder of this package
-        ui_file = os.path.join(rospkg.RosPack().get_path('gui'), 'resource', 'MyPlugin.ui')
-        # Extend the widget with all attributes and children from UI file
-        loadUi(ui_file, self._widget)
-        # loadUi(ui_file, self, {'TopicWidget': TopicWidget})
+        # # Create QWidget
+        # self._widget = QWidget()
+        # # Get path to UI file which should be in the "resource" folder of this package
+        # ui_file = os.path.join(rospkg.RosPack().get_path('gui'), 'resource', 'MyPlugin.ui')
+        # # Extend the widget with all attributes and children from UI file
+        # loadUi(ui_file, self._widget)
+        # # loadUi(ui_file, self, {'TopicWidget': TopicWidget})
         
         # Give QObjects reasonable names
+        self._widget = QWidget()
+        self._widget.resize(680, 240)
         self._widget.setObjectName('MyPluginUi')
         # Show _widget.windowTitle on left-top of each plugin (when 
         # it's set in _widget). This is useful when you open multiple 
