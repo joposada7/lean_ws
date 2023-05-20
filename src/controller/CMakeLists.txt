@@ -165,9 +165,9 @@ include_directories(
 #   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
 catkin_install_python(PROGRAMS
-  scripts/controller_node.py
-  scripts/publish_tf.py
-  scripts/motors.py
+  src/joy.py
+  src/publish_tf.py
+  src/roslogger.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 ## Mark executables for installation
