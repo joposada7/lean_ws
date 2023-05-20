@@ -4,7 +4,7 @@
       Provides information similar to that provided in UNIX top for running ROS nodes.
     </description>
     <qtgui>
-      <label>Process Monitor</label>
+      <label>LEAN Plugin</label>
       <icon type="theme">utilities-system-monitor</icon> 
       <statustip>Python GUI to view process information about running ROS processes.</statustip>
     </qtgui>
