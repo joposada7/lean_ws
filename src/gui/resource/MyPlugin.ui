@@ -11,9 +11,9 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>LEAN Plugin</string>
   </property>
-  <widget class="QPushButton" name="Test">
+  <widget class="QLabel" name="Test">
    <property name="geometry">
     <rect>
      <x>120</x>
@@ -23,7 +23,20 @@
     </rect>
    </property>
    <property name="text">
-    <string>Original Name</string>
+    <string>Voltage1</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="Test1">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>100</y>
+     <width>98</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Voltage 2</string>
    </property>
   </widget>
  </widget>
