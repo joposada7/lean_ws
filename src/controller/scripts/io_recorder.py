@@ -44,7 +44,7 @@ class IORecorder:
 		rwm_sub = message_filters.Subscriber("rwm_input", Float64)
 		lvm_sub = message_filters.Subscriber("lvm_input", Float64)
 		rvm_sub = message_filters.Subscriber("rvm_input", Float64)
-		THRESHOLD = rospy.get_param("msg_arrival_threshold")
+		THRESHOLD = 0.025 # seconds
 		self.ts = message_filters.ApproximateTimeSynchronizer([lwm_sub, rwm_sub, lvm_sub, rvm_sub], queue_size=1, slop=THRESHOLD, allow_headerless=True)
 		self.ts.registerCallback(self.record_input_only)
 
@@ -119,14 +119,26 @@ class IORecorder:
 		vel = np.array(self.velocities)
 		acc = np.array(self.accelerations)
 
-		data_i = np.c_[self.times_i, self.lwm_inputs, self.rwm_inputs]
-		data_o = np.c_[self.times_o, pos[:,0], pos[:,1], pos[:,2], vel[:,0], vel[:,1], vel[:,2], acc[:,0], acc[:,1], acc[:,2], self.orientations, self.rotation_rates, self.angular_velocity]
+		inputs = [self.times_i, self.lwm_inputs, self.rwm_inputs]
+		inputs = self.pad_lists(inputs)
+		data_i = np.column_stack(inputs)
+
+		outputs = [self.times_o, pos[:,0], pos[:,1], pos[:,2], vel[:,0], vel[:,1], vel[:,2], acc[:,0], acc[:,1], acc[:,2], self.orientations, self.rotation_rates, self.angular_velocity]
+		outputs = self.pad_lists(outputs)
+		data_o = np.column_stack(outputs)
 
 		d = os.path.dirname(__file__)
 		datapath = os.path.join(d,'..','data')
-		numfiles = len(os.listdir(datapath)) # Should be in pairs
-		num = int(numfiles/2)+1
-		filename = str(datetime.now().strftime("%m-%d"))+"-"+str(num)
+		names = os.listdir(datapath)
+		next_num = 1
+		for name in names:
+			if name.find("outputs")!=-1:
+				# This is an outputs file
+				s = name.split('-')
+				num = int(s[-1][:-4])
+				if num >= next_num:
+					next_num = num+1
+		filename = str(datetime.now().strftime("%m-%d"))+"-"+str(next_num)
 
 		# Store inputs
 		input_path = os.path.join(d,'..','data','inputs-'+filename+'.csv')
@@ -143,6 +155,24 @@ class IORecorder:
 			w.writerow(["t", "x", "y", "z", "vx", "vy", "vz", "ax", "ay", "az", "theta", "theta_dot", "omega"]) # Header
 			w.writerows(data_o)
 		rospy.loginfo("Logged output data into " + output_path + "!")
+
+		# Store omegas in dedicated file for now
+		omega_path = os.path.join(d,'..','data','omegas-'+filename+'.csv')
+		with open(omega_path, 'w+', newline='') as f:
+			w = csv.writer(f)
+			w.writerow(["t", "omega"])
+			w.writerows(np.c_[self.times_o, self.angular_velocity])
+		rospy.loginfo("Logged omega data into " + omega_path + "!")
+
+	def pad_lists(self, lst):
+		"""
+		Turn arbitrary list of lists into numpy array of same lengths by padding ends with last elements.
+		"""
+		p = len(max(lst, key=len))
+		if p == 0:
+			return np.array(lst) # Empty lists
+
+		return np.array([np.append(i,[i[-1]]*(p-len(i))) for i in lst])
 
 
 if __name__ == '__main__':

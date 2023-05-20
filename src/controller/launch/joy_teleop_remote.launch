@@ -2,7 +2,7 @@
 
 <launch>
   <!-- Launch logger -->
-  <node name="roslogger" pkg="controller" type="roslogger.py" output="screen"/>
+  <!-- <node name="roslogger" pkg="controller" type="roslogger.py" output="screen"/> -->
 
   <!-- Launch joy_node on local machine -->
   <node name="joy" pkg="joy" type="joy_node" output="screen"/>
@@ -18,4 +18,5 @@
   <!-- Launch remotely, assuming there is an /env/user_env.sh script -->
   <machine name="lean" address="$(arg ip)" user="$(arg user)" env-loader="/home/$(arg user)/NoeticLean/src/controller/env/$(arg user)_env.sh"/>
   <node machine="lean" name="joy_handler" pkg="controller" type="joy.py" output="screen"/>
+  <node machine="lean" name="sensors" pkg="sensing" type="power_sense.py" output="screen"/>
 </launch>

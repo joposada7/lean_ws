@@ -69,6 +69,11 @@ class JoyHandler():
 		self.RVM_pub = rospy.Publisher("rvm_input", Float64, queue_size=1)
 
 	def spin_motors(self, msg):
+		if msg.buttons[0]:
+			# Button A is pressed, override!
+			DUTY_CYCLE = 100.0
+			self.forward_or_back(DUTY_CYCLE)
+
 		linear = self.get_throttle(msg.axes[1]) # Up/down on LS
 		angular = self.get_throttle(msg.axes[3]) # Left/right on RS
 		vertical = self.get_throttle(msg.axes[4]) # Up/down on RS

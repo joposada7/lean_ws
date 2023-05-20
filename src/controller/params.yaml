@@ -3,8 +3,8 @@ joy_deadzone: 0.01 # deadzone in [0,1]
 
 motor_frequency: 2000 # Hz
 
-low_throttle: 0 # %, for lowest speed
-high_throttle: 40 # %, for highest speed
+low_throttle: 50 # %, for lowest speed
+high_throttle: 100 # %, for highest speed
 # for shrimp:   50 -> 100 is good
 # for bean:     0  -> 40  is good
 # for wayfarer: ?  -> ??  is good
