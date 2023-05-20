@@ -54,7 +54,7 @@ class MyPlugin(Plugin):
         rospy.spin()
 
     def callback(self, data):  # This is the CallBack function called after subscribing the topic, to use the data
-        self._widget.text.setText(str(data.linear.x))
+        self._widget.Test.setText(str(data.linear.x))
 
 
     def shutdown_plugin(self):
