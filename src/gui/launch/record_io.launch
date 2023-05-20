@@ -3,5 +3,5 @@
 <launch>
   <!-- Begin recording IO -->
   <param name="/use_sim_time" value="false"/>
-  <node name="io_recorder" pkg="controller" type="io_recorder.py" output="screen"/>
+  <node name="io_recorder" pkg="gui" type="io_recorder.py" output="screen"/>
 </launch>
