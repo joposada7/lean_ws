@@ -1,12 +1,12 @@
 <library path="src">
-  <class name="My Plugin" type="rqt_mypkg.my_module.MyPlugin" base_class_type="rqt_gui_py::Plugin">
+  <class name="Plug" type="rqt_plug_pkg.qt_plugin.Top" base_class_type="rqt_gui_py::Plugin">
     <description>
-      An example Python GUI plugin to create a great user interface.
+      Provides information similar to that provided in UNIX top for running ROS nodes.
     </description>
     <qtgui>
-      <label>Voltage Plugin</label>
-      <icon type="theme">system-help</icon>
-      <statustip>GUI to provide votltage value.</statustip>
+      <label>Process Monitor</label>
+      <icon type="theme">utilities-system-monitor</icon> 
+      <statustip>Python GUI to view process information about running ROS processes.</statustip>
     </qtgui>
   </class>
 </library>
