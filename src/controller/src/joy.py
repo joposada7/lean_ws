@@ -184,7 +184,7 @@ if __name__ == '__main__':
 	jh = JoyHandler()
 	rospy.on_shutdown(jh.cleanup_motors) # Stop motors on node shutdown
 
-	r = rospy.Rate(30)
+	r = rospy.Rate(360)
 	while not rospy.is_shutdown():
 		jh.publish_duty_cycles()
 		r.sleep()
