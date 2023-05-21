@@ -8,6 +8,7 @@ from acl_msgs.msg import ViconState
 class TFPublisher():
 	"""
 	Take Vicon state and publish pose as transform for /world frame.
+	Also publish speed and acceleration data.
 	"""
 
 	def __init__(self):

@@ -77,8 +77,9 @@ class JoyHandler():
 	def spin_motors(self, msg):
 		if msg.buttons[0]:
 			# Button A is pressed, override!
-			DUTY_CYCLE = 100.0
+			DUTY_CYCLE = 50.0
 			self.forward_or_back(DUTY_CYCLE)
+			return
 
 		linear = self.get_throttle(msg.axes[1]) # Up/down on LS
 		angular = self.get_throttle(msg.axes[3]) # Left/right on RS

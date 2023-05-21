@@ -8,7 +8,7 @@ import os
 import csv
 from datetime import datetime
 
-from std_msgs.msg import Float64
+from std_msgs.msg import Float32, Float64
 from acl_msgs.msg import ViconState
 
 class IORecorder:
@@ -29,15 +29,28 @@ class IORecorder:
 		self.rvm_inputs = []
 
 		self.times_o = []
-		self.positions = []
-		self.velocities = []
-		self.accelerations = []
-		self.orientations = []
-		self.rotation_rates = []
-		self.angular_velocity = []
+		# self.positions = []
+		# self.velocities = []
+		# self.accelerations = []
+		# self.orientations = []
+		# self.rotation_rates = []
+		# self.angular_velocity = []
 
 		# Outputs
-		pose_sub = rospy.Subscriber("vicon", ViconState, self.record_pose_only)
+		# pose_sub = rospy.Subscriber("/vicon", ViconState, self.record_pose_only)
+
+		# FOR TESTING
+		self.velocities = []
+		self.angular_velocity = []
+		self.actuation_power = []
+		self.computation_power = []
+		speed_sub = message_filters.Subscriber("/speed", Float64)
+		ap_sub = message_filters.Subscriber("actuation_power", Float32)
+		cp_sub = message_filters.Subscriber("computation_power", Float32)
+		self.ts_i = message_filters.ApproximateTimeSynchronizer([speed_sub, ap_sub, cp_sub], queue_size=1, slop=0.05, allow_headerless=True)
+		self.ts_i.registerCallback(self.record_omega)
+
+		# speed_sub = rospy.Subscriber("/speed", Float64, self.record_omega)
 
 		# Inputs
 		lwm_sub = message_filters.Subscriber("lwm_input", Float64)
@@ -67,6 +80,23 @@ class IORecorder:
 		self.rwm_inputs.append(msg_rwm.data)
 		self.lvm_inputs.append(msg_lvm.data)
 		self.rvm_inputs.append(msg_rvm.data)
+
+	def record_omega(self, msg_v, msg_a, msg_c):
+		"""
+		Record velocity and angular velocity of wheels.
+		"""
+		RADIUS = 0.0127 # meters, of wheel
+		vel = -msg_v.data
+		omega = vel/RADIUS
+
+		now = rospy.Time.now()
+		t = now.secs + (float(rospy.Time.now().nsecs)/10e9) - self.t0
+
+		self.times_o.append(t)
+		self.velocities.append(vel)
+		self.angular_velocity.append(omega)
+		self.actuation_power.append(msg_a.data)
+		self.computation_power.append(msg_c.data)
 
 	def record_pose_only(self, msg):
 		"""
@@ -115,15 +145,16 @@ class IORecorder:
 		"""
 		Write all the data 2 large .csv files within the data directory corresponding to this run.
 		"""
-		pos = np.array(self.positions)
-		vel = np.array(self.velocities)
-		acc = np.array(self.accelerations)
+		# pos = np.array(self.positions)
+		# vel = np.array(self.velocities)
+		# acc = np.array(self.accelerations)
 
 		inputs = [self.times_i, self.lwm_inputs, self.rwm_inputs]
 		inputs = self.pad_lists(inputs)
 		data_i = np.column_stack(inputs)
 
-		outputs = [self.times_o, pos[:,0], pos[:,1], pos[:,2], vel[:,0], vel[:,1], vel[:,2], acc[:,0], acc[:,1], acc[:,2], self.orientations, self.rotation_rates, self.angular_velocity]
+		# outputs = [self.times_o, pos[:,0], pos[:,1], pos[:,2], vel[:,0], vel[:,1], vel[:,2], acc[:,0], acc[:,1], acc[:,2], self.orientations, self.rotation_rates, self.angular_velocity]
+		outputs = [self.times_o, self.velocities, self.angular_velocity, self.actuation_power, self.computation_power]
 		outputs = self.pad_lists(outputs)
 		data_o = np.column_stack(outputs)
 
@@ -152,17 +183,18 @@ class IORecorder:
 		output_path = os.path.join(d,'..','data','outputs-'+filename+'.csv')
 		with open(output_path, 'w+', newline='') as f:
 			w = csv.writer(f)
-			w.writerow(["t", "x", "y", "z", "vx", "vy", "vz", "ax", "ay", "az", "theta", "theta_dot", "omega"]) # Header
+			# w.writerow(["t", "x", "y", "z", "vx", "vy", "vz", "ax", "ay", "az", "theta", "theta_dot", "omega"]) # Header
+			w.writerow(["t", "v", "omega", "acutation_power", "computation_power"])
 			w.writerows(data_o)
 		rospy.loginfo("Logged output data into " + output_path + "!")
 
 		# Store omegas in dedicated file for now
-		omega_path = os.path.join(d,'..','data','omegas-'+filename+'.csv')
-		with open(omega_path, 'w+', newline='') as f:
-			w = csv.writer(f)
-			w.writerow(["t", "omega"])
-			w.writerows(np.c_[self.times_o, self.angular_velocity])
-		rospy.loginfo("Logged omega data into " + omega_path + "!")
+		# omega_path = os.path.join(d,'..','data','omegas-'+filename+'.csv')
+		# with open(omega_path, 'w+', newline='') as f:
+		# 	w = csv.writer(f)
+		# 	w.writerow(["t", "omega"])
+		# 	w.writerows(np.c_[self.times_o, self.angular_velocity])
+		# rospy.loginfo("Logged omega data into " + omega_path + "!")
 
 	def pad_lists(self, lst):
 		"""

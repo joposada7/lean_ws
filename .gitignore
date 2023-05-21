@@ -5,3 +5,8 @@ devel/
 .rosinstall
 .vscode/
 
+# Ignore __pycache__ folders
+.__pycache__/
+
+# Ignore csv files
+*.csv
