@@ -166,8 +166,6 @@ include_directories(
 # )
 catkin_install_python(PROGRAMS
   src/joy.py
-  src/publish_tf.py
-  src/roslogger.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 ## Mark executables for installation
