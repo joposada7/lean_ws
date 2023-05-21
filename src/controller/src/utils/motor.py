@@ -27,10 +27,11 @@ class Motor():
 
 	def change_duty_cycle(self, duty_cycle):
 		"""
-		Change to a duty cycle between -100 and 100.
+		Change to a duty cycle between -100 and 100 (%).
 		"""
 		if duty_cycle < -100 or duty_cycle > 100:
 			rospy.logerr(f"Invalid duty cycle of {duty_cycle}%!")
+			return
 
 		self.pwm.start(0)
 		self.duty_cycle = duty_cycle # For logging

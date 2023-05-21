@@ -7,7 +7,15 @@ import RPi.GPIO as GPIO
 
 class MotorHandler():
 	"""
-	Handles the motors on 4-motor differential drive robot.
+	Handles the motors on 4-motor differential drive robot. Relies on config.yaml for motor configuration on robot.
+	
+	Use:
+		motors = MotorHandler()
+		motors.LWM.change_duty_cycle(50)
+		motors.RWM.change_duty_cycle(-50)
+		rospy.on_shutdown(motors.cleanup_motors)
+
+	See motor.py for individual motor use.
 	"""
 	def __init__(self):
 		"""

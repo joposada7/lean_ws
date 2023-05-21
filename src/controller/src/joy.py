@@ -3,13 +3,12 @@ import rospy
 from sensor_msgs.msg import Joy
 
 from utils.motor_handler import MotorHandler
-import RPi.GPIO as GPIO
 
 class JoyHandler():
 	"""
-	Takes joystick input and converts it to Duty Cycles for the LEAN motors.
+	Takes joystick input and converts it to duty cycles for motors.
 	Default controls:
-		NOTE: Need to have kill-switch pressed down to move!
+		NOTE: If a kill-switch is set, need to have kill-switch pressed down to move!
 		Forward/back: LS up/down
 		Rotate: 	  RS left/right
 		Elevate: 	  RS up/down
