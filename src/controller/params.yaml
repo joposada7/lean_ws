@@ -1,6 +1,6 @@
 # Robot parameters
-motor_width: 0.5 # meters
-wheel_radius: 0.5 # meters
+robot_width: 0.0434 # meters, distance between motor actuators
+wheel_radius: 0.0127 # meters
 max_speed: 0.4 # m/s
 max_rotation_rate: 70 # rad/s
 max_torque: 70 # N*m

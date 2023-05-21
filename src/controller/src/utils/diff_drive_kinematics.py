@@ -7,7 +7,7 @@ class DiffDriveKinematics():
 	Implements differential drive kinematic equations.
 	"""
 	def __init__(self):
-		self.motor_width = rospy.get_param("motor_width") # meters
+		self.robot_width = rospy.get_param("robot_width") # meters
 		self.wheel_radius = rospy.get_param("wheel_radius") # meters
 
 	def wheel_to_robot(self, left_wheel_velocity, right_wheel_velocity):
@@ -16,7 +16,7 @@ class DiffDriveKinematics():
 		and heading rate according to differential drive kinematics.
 		"""
 		robot_velocity = self.wheel_radius/2.0 * (left_wheel_velocity + right_wheel_velocity)
-		heading_rate = self.wheel_radius/(2.0*self.motor_width) * (right_wheel_velocity - left_wheel_velocity)
+		heading_rate = self.wheel_radius/(2.0*self.robot_width) * (right_wheel_velocity - left_wheel_velocity)
 
 		return [robot_velocity, heading_rate]
 
@@ -26,7 +26,7 @@ class DiffDriveKinematics():
 		wheel velocities in order to achieve them.
 		"""
 		total_wheel_velocity = 2.0/self.wheel_radius * velocity
-		wheel_velocity_difference = (2.0*self.motor_width)/self.wheel_radius * heading_rate
+		wheel_velocity_difference = (2.0*self.robot_width)/self.wheel_radius * heading_rate
 
 		# Try to find set wheel velocities to match the desired heading rate
 		left_wheel_velocity = total_wheel_velocity/2
