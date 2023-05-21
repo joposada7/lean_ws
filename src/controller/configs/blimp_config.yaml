@@ -1,0 +1,17 @@
+# Geometry
+robot_width: 0.0434 # meters, distance between motor actuators
+wheel_radius: 0.0127 # meters
+
+# Limits
+max_speed: 0.4 # m/s
+max_rotation_rate: 70 # rad/s
+max_torque: 70 # N*m
+
+# Motors
+left_wheel_motor: 2
+right_wheel_motor: 1
+left_vertical_motor: 4
+right_vertical_motor: 3
+
+low_throttle: 0 # %, for lowest speed
+high_throttle: 40 # %, for highest speed

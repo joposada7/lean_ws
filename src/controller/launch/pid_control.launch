@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <launch>
-  <!-- Load config and parameters -->
-  <rosparam file="$(find controller)/config.yaml" command="load"/>
-  <rosparam file="$(find controller)/params.yaml" command="load"/>
-
   <!-- Command-line arguments for remote machine, defaults to shrimp opts -->
   <arg name="user" default="shrimp"/>
   <arg name="ip" default="192.168.50.81"/>
+
+  <!-- Load config and parameters -->
+  <rosparam file="$(find controller)/configs/$(arg user)_config.yaml" command="load"/>
+  <rosparam file="$(find controller)/params.yaml" command="load"/>
 
   <!-- Launch nodes remotely, assuming there is an /env/user_env.sh script -->
   <machine name="lean" address="$(arg ip)" user="$(arg user)" env-loader="/home/$(arg user)/NoeticLean/src/controller/env/$(arg user)_env.sh"/>
