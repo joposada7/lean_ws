@@ -41,7 +41,13 @@ class RobotController():
 
 		# TODO!!!!!!!
 
-		return torque
+		rospy.loginfo(f"Desired torque={torque} N*m")
+		if torque > 100:
+			return 100
+		elif torque < -100:
+			return -100
+		else:
+			return torque
 
 
 if __name__ == "__main__":

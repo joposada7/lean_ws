@@ -6,7 +6,7 @@ import tf
 from utils.motor_handler import MotorHandler
 from utils.diff_drive_kinematics import DiffDriveKinematics
 
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PointStamped
 from acl_msgs.msg import ViconState
 from controller.msg import Torques
 
@@ -36,7 +36,7 @@ class PIDController():
 
 		# Get goal position
 		self.goal = None
-		self.goal_sub = rospy.Subscriber("/move_base_simple/goal", PoseStamped, self.update_goal)
+		self.goal_sub = rospy.Subscriber("/clicked_point", PointStamped, self.update_goal)
 
 		# Start control loop
 		self.ddk = DiffDriveKinematics()
@@ -131,11 +131,14 @@ class PIDController():
 	def update_goal(self, msg):
 		"""
 		Update current known goal.
-			- msg: geometry_msgs/PoseStamped
+			- msg: geometry_msgs/PointStamped
 		"""
-		g = msg.pose.position
+		g = msg.point
 		self.goal = np.array([g.x, g.y, g.z])
 
 
-
-
+if __name__ == '__main__':
+	rospy.init_node("pid_control")
+	pid = PIDController()
+	rospy.on_shutdown(pid.stop)
+	rospy.spin()
