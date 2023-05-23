@@ -8,11 +8,13 @@ if __name__ == '__main__':
 	motors = MotorHandler()
 	rospy.on_shutdown(motors.cleanup_motors)
 
-	for i in range(0,101):
-		rospy.loginfo(f"RUNNING AT {i}%")
-		motors.LWM.change_duty_cycle(i)
-		motors.RWM.change_duty_cycle(i)
-		time.sleep(0.25)
+	DUTY_CYCLE = 100
+	rospy.loginfo(f"RUNNING AT {DUTY_CYCLE}%")
+	motors.LWM.change_duty_cycle(DUTY_CYCLE)
+	motors.RWM.change_duty_cycle(DUTY_CYCLE)
+
+	while True:
+		time.sleep(1)
 
 	motors.cleanup_motors()
 	

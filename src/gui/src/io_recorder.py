@@ -43,7 +43,7 @@ class IORecorder:
 		lvm_sub = message_filters.Subscriber("lvm_input", Float64)
 		rvm_sub = message_filters.Subscriber("rvm_input", Float64)
 		self.ts = message_filters.ApproximateTimeSynchronizer([lwm_sub, rwm_sub, lvm_sub, rvm_sub], queue_size=1, slop=0.05, allow_headerless=True)
-		self.ts.registerCallback(self.record_input_only)
+		self.ts.registerCallback(self.record_input)
 
 		# Outputs
 		speed_sub = message_filters.Subscriber("/speed", Float64)
@@ -95,7 +95,7 @@ class IORecorder:
 		ap = msg_ap.data
 		cp = msg_cp.data
 
-		accel = 0
+		acc = 0
 		omega = 0
 		if len(self.times_o) > 0:
 			dt = t - self.times_o[-1]
@@ -120,6 +120,8 @@ class IORecorder:
 		"""
 		Write all the data 2 large .csv files within the data directory corresponding to this run.
 		"""
+		rospy.sleep(1) # In case functions are still logging
+
 		# Sort data
 		inputs = [self.times_i, self.lwm_inputs, self.rwm_inputs]
 		inputs = self.pad_lists(inputs)
@@ -165,13 +167,15 @@ class IORecorder:
 
 		# Get relevant averages for torque-omega curve
 		i0 = next(i for (i,dc) in enumerate(self.lwm_inputs) if dc > 0.0)
-		i1 = next(i for (i,dc) in enumerate(self.lwm_inputs[i0:]) if dc == 0.0)
-		t0 = self.times_i[i0]
-		t1 = self.times_i[i1]
-		rospy.loginfo(f"AVERAGE VELOCITY DURING TEST = {self.get_average(self.velocity, t0, t1)}")
-		rospy.loginfo(f"AVERAGE ANGULAR VELOCITY DURING TEST = {self.get_average(self.angular_velocity, t0, t1)}")
-		rospy.loginfo(f"AVERAGE ACUTATION POWER DURING TEST = {self.get_average(self.acutation_power, t0, t1)}")
-		rospy.loginfo(f"AVERAGE COMPUTATION POWER DURING TEST = {self.get_average(self.computation_power, t0, t1)}")
+		i1 = i0+next(i for (i,dc) in enumerate(self.lwm_inputs[i0:]) if dc == 0.0)
+		di = int((i1-i0)*0.10) # Close bounds 20%
+		t0 = self.times_i[i0+di]
+		t1 = self.times_i[i1-di]
+		rospy.loginfo(f"Found start time t0={round(t0,3)} and end time t1={round(t1,3)}")
+		rospy.loginfo(f"AVERAGE VELOCITY DURING TEST = {round(self.get_average(self.velocity, t0, t1),3)} m/s")
+		rospy.loginfo(f"AVERAGE ANGULAR VELOCITY DURING TEST = {round(self.get_average(self.angular_velocity, t0, t1),3)} rad/s")
+		rospy.loginfo(f"AVERAGE ACUTATION POWER DURING TEST = {round(self.get_average(self.actuation_power, t0, t1),3)} W")
+		rospy.loginfo(f"AVERAGE COMPUTATION POWER DURING TEST = {round(self.get_average(self.computation_power, t0, t1),3)} W")
 
 	def get_average(self, lst, t0, t1):
 		"""

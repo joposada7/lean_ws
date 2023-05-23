@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+  <!-- Command-line arguments for remote machine, defaults to shrimp opts -->
+  <arg name="user" default="shrimp"/>
+  <arg name="ip" default="192.168.50.81"/>
+
+  <!-- Load config and parameters -->
+  <rosparam file="$(find controller)/configs/$(arg user)_config.yaml" command="load"/>
+  <rosparam file="$(find controller)/params.yaml" command="load"/>
+
+  <!-- Launch logger -->
+  <!-- <node name="roslogger" pkg="controller" type="roslogger.py" output="screen"/> -->
+
+  <!-- Launch joy for kill switch -->
+  <!-- <node name="joy" pkg="joy" type="joy_node" output="screen"/> -->
+
+  <!-- Launch nodes remotely, assuming there is an /env/user_env.sh script -->
+  <node name="sensors" pkg="sensing" type="power_sense.py" output="screen"/>
+  <node name="pid_control" pkg="controller" type="pid.py" output="screen"/>
+  <node name="robot_control" pkg="controller" type="robot_controller.py" output="screen"/>
+</launch>

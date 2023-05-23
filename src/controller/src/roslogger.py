@@ -11,12 +11,13 @@ class ROSLogger():
 	"""
 	def __init__(self):
 		self.rosout_sub = rospy.Subscriber("rosout", Log, self.rebroadcast, queue_size=10)
+		self.WHITELIST = ["/joy_handler", "/pid_control", "/robot_control"]
 
 	def rebroadcast(self, msg):
 		"""
 		Rebroadcast message based on level. logwarns unknown types.
 		"""
-		if msg.name == "/"+NODE_NAME:
+		if msg.name not in self.WHITELIST:
 			return # Skip logs from this node!
 
 		if msg.level == msg.DEBUG:

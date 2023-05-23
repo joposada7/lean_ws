@@ -16,6 +16,7 @@ class JoyHandler():
 	def __init__(self):
 		rospy.loginfo("SETTING UP JOYSTICK...")
 		self.motors = MotorHandler()
+		rospy.on_shutdown(self.motors.cleanup_motors) # Stop motors on node shutdown
 
 		# Get parameters
 		self.KILL_SWITCH = rospy.get_param("joy_kill_switch")
@@ -27,6 +28,12 @@ class JoyHandler():
 		self.joy_sub = rospy.Subscriber("joy", Joy, self.spin_motors, queue_size=1)
 		rospy.loginfo("JOYSTICK CONTROL READY!")
 
+		# Publish duty cycles
+		r = rospy.Rate(360)
+		while not rospy.is_shutdown():
+			self.motors.publish_duty_cycles()
+			r.sleep()
+
 	def spin_motors(self, msg):
 		"""
 		Handle joystick command by issuing desired duty cycles to each motor.
@@ -37,9 +44,7 @@ class JoyHandler():
 		### A BUTTON OVERRIDE ###
 
 		if msg.buttons[0]:
-			DUTY_CYCLE = 50.0
-			self.motors.LWM.change_duty_cycle(DUTY_CYCLE)
-			self.motors.RWM.change_duty_cycle(DUTY_CYCLE)
+			self.button_override()
 			return
 
 		### GET INPUT ###
@@ -56,11 +61,6 @@ class JoyHandler():
 				self.motors.stop_motors()
 				return
 
-		if linear == 0.0 and angular == 0.0 and vertical == 0.0:
-			# No movement at all
-			self.motors.stop_motors()
-			return
-
 		### HANDLE MOVEMENT IN HORIZONTAL PLANE ###
 
 		if linear == 0.0 and angular == 0.0:
@@ -70,42 +70,71 @@ class JoyHandler():
 		else:
 			if angular == 0.0:
 				# Forward or back
-				# self.motors.LWM.change_duty_cycle(linear)
-				# self.motors.RWM.change_duty_cycle(linear)
-
-				# GOING STRAIGHT BANANAS LEFT BECAUSE OF MISALIGNED WHEELS
-				# --> Left wheel must spin faster
-				self.motors.LWM.change_duty_cycle(0.70*linear)
-				self.motors.RWM.change_duty_cycle(linear)
-				rospy.loginfo(f"MOVE {round(linear,1)}%")
-
+				self.forward_or_back(linear)
 			elif linear == 0.0:
 				# Turning in place
-				self.motors.LWM.change_duty_cycle(angular)
-				self.motors.RWM.change_duty_cycle(-angular)
-				rospy.loginfo(f"TURN {round(angular,1)}%")
-
-			### BLEND HORIZONTAL INPUTS ###
-
+				self.turn_in_place(angular)
 			else:
-				scale = self.scale_angular(angular)
-				if angular > 0.0:
-					# Left turns
-					self.motors.LWM.change_duty_cycle(linear)
-					self.motors.RWM.change_duty_cycle(scale*linear)
-					rospy.loginfo(f"LEFT CURVE {round(linear,1)}%")
-				else:
-					# Right turns
-					self.motors.LWM.change_duty_cycle(scale*linear)
-					self.motors.RWM.change_duty_cycle(linear)
-					rospy.loginfo(f"RIGHT CURVE {round(linear,1)}%")
+				# Move while turning
+				self.move_while_turning(linear, angular)
 
 		### HANDLE VERTICAL MOVEMENT ###
 
-		self.motors.LVM.change_duty_cycle(vertical)
-		self.motors.RVM.change_duty_cycle(vertical)
-		if vertical != 0.0:
-			rospy.loginfo(f"VERTICAL {round(linear,1)}%")
+		if vertical == 0.0:
+			# No vertical movement
+			self.motors.LVM.stop_motor()
+			self.motors.RVM.stop_motor()
+		else:
+			# Up or down
+			self.up_or_down(vertical)
+
+	##### MOTION PRIMITIVES #####
+
+	def forward_or_back(self, duty_cycle):
+		"""
+		Move forward or back with LWM/RWM.
+		"""
+		self.motors.LWM.change_duty_cycle(duty_cycle)
+		self.motors.RWM.change_duty_cycle(duty_cycle)
+		rospy.loginfo(f"MOVE {round(duty_cycle,1)}%")
+
+	def turn_in_place(self, duty_cycle):
+		"""
+		Turn in place with LWM/RWM.
+		"""
+		self.motors.LWM.change_duty_cycle(duty_cycle)
+		self.motors.RWM.change_duty_cycle(-duty_cycle)
+		rospy.loginfo(f"TURN {round(duty_cycle,1)}%")
+
+	def move_while_turning(self, duty_cycle_linear, duty_cycle_angular):
+		scale = self.scale_angular(duty_cycle_angular)
+		if duty_cycle_angular > 0.0:
+			# Left turns
+			self.motors.LWM.change_duty_cycle(duty_cycle_linear)
+			self.motors.RWM.change_duty_cycle(scale*duty_cycle_linear)
+			rospy.loginfo(f"LEFT CURVE {round(duty_cycle_linear,1)}%")
+		else:
+			# Right turns
+			self.motors.LWM.change_duty_cycle(scale*duty_cycle_linear)
+			self.motors.RWM.change_duty_cycle(duty_cycle_linear)
+			rospy.loginfo(f"RIGHT CURVE {round(duty_cycle_linear,1)}%")
+
+	def up_or_down(self, duty_cycle):
+		"""
+		Move up or down with LVM/RVM.
+		"""
+		self.motors.LVM.change_duty_cycle(duty_cycle)
+		self.motors.RVM.change_duty_cycle(duty_cycle)
+		rospy.loginfo(f"VERTICAL {round(duty_cycle,1)}%")
+
+	def button_override(self):
+		"""
+		Do something else if the A button is pressed!
+		"""
+		DUTY_CYCLE = 50.0
+		self.forward_or_back(DUTY_CYCLE)
+
+	##### THROTTLE HANDLERS #####
 
 	def get_throttle(self, axis_measure):
 		"""
@@ -138,13 +167,6 @@ class JoyHandler():
 		mapped = low + (scaled * new_range)
 		return mapped
 
-
 if __name__ == '__main__':
 	rospy.init_node("joy_handler")
 	jh = JoyHandler()
-	rospy.on_shutdown(jh.motors.cleanup_motors) # Stop motors on node shutdown
-
-	r = rospy.Rate(360)
-	while not rospy.is_shutdown():
-		jh.motors.publish_duty_cycles()
-		r.sleep()

@@ -10,7 +10,10 @@
   <rosparam file="$(find controller)/params.yaml" command="load"/>
 
   <!-- Launch logger -->
-  <!-- <node name="roslogger" pkg="controller" type="roslogger.py" output="screen"/> -->
+  <node name="roslogger" pkg="controller" type="roslogger.py" output="screen"/>
+
+  <!-- Launch joy for kill switch -->
+  <node name="joy" pkg="joy" type="joy_node" output="screen"/>
 
   <!-- Launch nodes remotely, assuming there is an /env/user_env.sh script -->
   <machine name="lean" address="$(arg ip)" user="$(arg user)" env-loader="/home/$(arg user)/NoeticLean/src/controller/env/$(arg user)_env.sh"/>

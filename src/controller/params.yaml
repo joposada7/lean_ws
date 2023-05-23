@@ -1,11 +1,9 @@
 # Control parameters
-kp: 0.1
-ki: 0.0
-kd: 0.0001
-speed: 0.3 # m/s
+kp: 2.60
+ki: 0.10
+kd: 0.25
+speed: 0.5 # m/s
 
 # Joystick parameters
 joy_kill_switch: -1 # -1 to disable
 joy_deadzone: 0.01 # deadzone in [0,1]
-
-motor_frequency: 2000 # Hz

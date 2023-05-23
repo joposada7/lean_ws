@@ -20,7 +20,7 @@ class SpeedPublisher():
 		self.thetas = np.array([])
 
 		self.vicon_sub = rospy.Subscriber("/vicon", ViconState, self.publish_vicon_speed)
-		self.speed_pub = rospy.Publisher("speed", Float64, queue_size=1)
+		self.speed_pub = rospy.Publisher("/speed", Float64, queue_size=1)
 
 	def publish_vicon_speed(self, msg):
 		"""

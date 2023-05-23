@@ -12,6 +12,7 @@ left_wheel_motor: 4
 right_wheel_motor: 1
 left_vertical_motor: 2
 right_vertical_motor: 3
+motor_frequency: 2000 # Hz
 
 low_throttle: 50 # %, for lowest speed
 high_throttle: 100 # %, for highest speed

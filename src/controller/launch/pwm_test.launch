@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+  <!-- Command-line arguments for remote machine, defaults to shrimp opts -->
+  <arg name="user" default="shrimp"/>
+
+  <!-- Load motor config -->
+  <rosparam file="$(find controller)/configs/$(arg user)_config.yaml" command="load"/>
+
+  <!-- Run PWM test script -->
+  <node name="pwm_test_script" pkg="controller" type="pwm_test_script.py" output="screen"/>
+</launch>

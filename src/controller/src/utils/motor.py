@@ -56,3 +56,4 @@ class Motor():
 		"""
 		GPIO.output(self.dirPin, GPIO.LOW)
 		self.pwm.stop(0)
+		self.duty_cycle = 0.0

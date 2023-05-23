@@ -18,13 +18,20 @@ class DiffDriveKinematics():
 		robot_velocity = self.wheel_radius/2.0 * (left_wheel_velocity + right_wheel_velocity)
 		heading_rate = self.wheel_radius/(2.0*self.robot_width) * (right_wheel_velocity - left_wheel_velocity)
 
-		return [robot_velocity, heading_rate]
+		return (robot_velocity, heading_rate)
 
 	def robot_to_wheel(self, velocity, heading_rate):
 		"""
 		Takes desired robot velocity and heading and returns the necessary
 		wheel velocities in order to achieve them.
 		"""
+		# omega_L = (velocity - (self.robot_width/2.0)*heading_rate)/self.wheel_radius
+		# omega_R = (velocity + (self.robot_width/2.0)*heading_rate)/self.wheel_radius
+
+		# return (omega_L, omega_R)
+
+		### OLD IMPLEMENTATION ###
+
 		total_wheel_velocity = 2.0/self.wheel_radius * velocity
 		wheel_velocity_difference = (2.0*self.robot_width)/self.wheel_radius * heading_rate
 
