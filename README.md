@@ -4,10 +4,6 @@ ROS1 Noetic workspace for low-power robotic platforms.
 
 Contains ROS OptiTrack Motive Client from https://github.com/mit-aera/OptiTrack-Motive-2-Client
 
-LEAN SSID pass: leanpass
-
-LEAN router login: admin; ceimp
-
 
 # ROS1-Wayfarer
 
