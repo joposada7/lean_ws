@@ -192,6 +192,16 @@ We will now be able to access our launch files and respective packages!
 
 ***IMPORTANT : If you need to commit to this repository, do not add your build/ and devel/ directories.
 
+# Dependencies
+
+If not already installed, you will need the Eigen and Adafruit INA219 libraries.
+```
+sudo apt install libeigen3-dev
+```
+```
+pip3 install adafruit-circuitpython-ina219
+```
+
 # References
 Debian Buster Install Instructions: https://qengineering.eu/install-64-os-on-raspberry-pi-zero-2.html
 
