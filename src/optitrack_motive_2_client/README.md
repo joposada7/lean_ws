@@ -4,7 +4,13 @@ This package handles interfacing with the Optitrack Motive software in the motio
 
 ## Motion Capture room setup
 
-TODO
+To connect to the robot remotely, a router and two ethernet cables are needed. An ethernet to USB adapter may be needed if the laptop being used does not have an ethernet port.
+
+Power the router and connect one LAN port to the router in the MOCAP room labeled "OPTITRACK OUTPUT" and one LAN port to your machine. Optionally, the WAN port can be connected to the router labeled "INTERNET" for simplicity, as without this, your machine will not be able to access the internet while connected to the Optitrack network.
+
+Login to the desktop labeled "MOCAP" using credentials:
+* user: LEAN
+* pass: mit-lean
 
 ## Network setup
 
@@ -32,9 +38,18 @@ network:
 ```
 replacing `enx00e100001146` whatever the name of your ethernet interface is.
 
-The netplan configuration can be applied with `sudo netplan apply`.
+The netplan configuration can be applied with `sudo netplan apply`. The output of `ip a` should show
 
-After this, ensure that the host computer's `ROS_IP` environment variable is set to its own IP on the LEAN network using `export ROS_IP=192.168.50.84`, replacing the IP with the host machine's IP.
+![Netplan configuration from output of ip a](/media/network.png)
+
+After this, ensure that the host computer's `ROS_IP` environment variable is set to its own IP on the LEAN network using
+```bash
+export ROS_IP=$(hostname -I | cut -d' ' -f1)
+```
+
+If this doesn't work, ensure the machine is connected to the LEAN network. Use `hostname -I` to find the IP that is not `192.168.1.112` and then use that IP as in `export ROS_IP=127.0.0.1`.
+
+
 
 ## Launching the client
 

@@ -227,7 +227,7 @@ echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 We can now clone our repository (on both host and Pi):
 
 ```bash
-git clone git@github.com:alexrice236/NoeticLean.git
+git clone git@github.com:joposada7/lean_ws.git
 ```
 
 Change to our workspace source directory and update .rosinstall:
