@@ -12,6 +12,12 @@ Login to the desktop labeled "MOCAP" using credentials:
 * user: LEAN
 * pass: mit-lean
 
+Open the Motive client on the desktop. Go to File>Open and navigate to the `C:\Users\mocap\Documents\OptiTrack\Calibration`, and sort by Date Modified. Select a calibration labeled 'HalfSpace' with a temperature close to the current temperature listed by the [MIT Sailing Pavilion](https://sailing.mit.edu/weather/), but also one that is as recent as possible. Also, select View>'Data Streaming Pane', and ensure the Local Interface is set to `192.168.1.12`.
+
+Turn on the MOCAP room cameras by turning on the labeled power strip in the corner of the room. It will take a minute or two to start up completely. 43 total cameras should appear on the right ahnd pane labeled 'Devices' in the Motive client, and any markers visible in the space should appear. Lights can be controlled near the door. Once the robot is placed in the MOCAP space, select their markers, right click and select 'Rigid Body'>'Create From Selected Markers'. Rename the body in the bottom right properties pane. Change the minimum marker count and max deflection as necessary.
+
+> :warning: Be sure to delete the created rigid body once you are done testing in the MOCAP room, as a courtesy to others that use the space. Also **make sure that the room is left clean as it was found, the nets are closed off, the cameras are turned off, the lights are turned off, and all supplies you brought in are taken out.**
+
 ## Network setup
 
 This setup assumes Ubuntu 20.04 or future. Note that the LEAN lab laptop already has this setup completed, and only has to be redone when a new ethernet adapter is used.
