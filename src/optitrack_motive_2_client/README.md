@@ -1,4 +1,4 @@
-# NoeticLean/optitrack_motive_2_client
+# lean_ws/optitrack_motive_2_client
 
 This package handles interfacing with the Optitrack Motive software in the motion capture room. It is a Noetic port of the package built by MIT-AERA (https://github.com/mit-aera/OptiTrack-Motive-2-Client).
 

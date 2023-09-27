@@ -1,9 +1,20 @@
 
-# NoeticLean
+# 
 
 ROS1 Noetic workspace for low-power robotic platforms.
 
 Contains ROS OptiTrack Motive Client from https://github.com/mit-aera/OptiTrack-Motive-2-Client.
+
+# Dependencies
+
+If not already installed, you will need these libraries for controller and sensing functionality.
+```bash
+sudo apt install libeigen3-dev ros-noetic-joy # Both host machine and Pi
+pip3 install RPi.GPIO # Both host machine and Pi
+pip3 install adafruit-circuitpython-ina219 # Pi only
+```
+
+## Lab Network
 
 For access to the router in the LEAN laboratory, connect to:
 * SSID: LEAN or LEAN-5G
@@ -25,18 +36,49 @@ ssh wayfarer # boat
 ssh blimp # blimp
 ```
 
+On other machines, connections can be made with
+```bash
+ssh shrimp@192.168.50.81 # car
+ssh wayfarer@192.168.50.105 # boat
+ssh blimp@192.168.50.? # blimp
+```
+
 Git is setup for each user's personal Github on each Pi, but performing `git` functions may require a password. To avoid this, you can always directly send files from the host computer to the Pi as follows:
 
 ```bash
 # Run on host machine connected to LEAN network
-rsync -av ~/NoeticLean/src/ shrimp@shrimp:~/NoeticLean/src/
+rsync -av ~/lean_ws/src/ shrimp@shrimp:~/lean_ws/src/
 ```
 
-# About this repository
+# Using this repository
+
+> :warning: **If you don't already have the proper Linux OS or ROS Noetic installed, refer to the following section on how to install those.**
 
 This workspace implements previously developed ROS packages from MIT AERA (`optitrack_motive_2_client` from https://github.com/mit-aera/OptiTrack-Motive-2-Client) and MIT ACL (`acl_msgs` from https://github.com/mit-acl), which are used to interface with the motion capture lab at MIT.
 
 As a catkin workspace, please do not commit any `/build` or `/devel` directories, or any files/directories listed in the `.gitignore` file at the root of the repo. These will vary per machine and can always be built using `catkin_make`.
+
+
+We can now clone our repository (on both host and Pi):
+
+```bash
+git clone git@github.com:joposada7/lean_ws.git
+```
+
+Return to the root of our workspace and build our packages (this might take a while on the Pi):
+
+```bash
+cd ~/lean_ws
+catkin_make
+```
+
+Source the overlay:
+
+```bash
+source devel/setup.bash
+```
+
+You can also add `source ~/lean_ws/devel/setup.bash` to the `~/.bashrc` file to automatically source the workspace everytime. You will now be able to access our launch files and respective packages!
 
 # Getting the right OS
 
@@ -152,6 +194,7 @@ add-apt-repository restricted
 ```
 
 ### Adding the package sources and keys
+
 ```bash
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
 ```
@@ -163,6 +206,7 @@ sudo apt update
 ```
 
 ### ROS installation and setup
+
 ```bash
 sudo apt install ros-noetic-desktop-full
 ```
@@ -201,6 +245,7 @@ sudo apt update
 ```
 
 ### ROS installation and setup
+
 We will now install the bare bones Noetic.
 ```bash
 sudo apt install ros-noetic-ros-base
@@ -220,46 +265,4 @@ You should see a list of about 30 available ROS packages.
 If you don't want to source the underlay every time you open a terminal, use the following to run automatically on startup.
 ```bash
 echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
-```
-
-## Using this repository
-
-We can now clone our repository (on both host and Pi):
-
-```bash
-git clone git@github.com:joposada7/lean_ws.git
-```
-
-Change to our workspace source directory and update .rosinstall:
-
-```bash
-cd ~/NoeticLean/src
-wstool update
-```
-
-Return to the root of our workspace and build our packages (this might take a while on the Pi):
-
-```bash
-cd ../
-catkin_make
-```
-
-Source the overlay:
-
-```bash
-source devel/setup.bash
-```
-
-You can also add `source ~/NoeticLean/devel/setup.bash` to the `~/.bashrc` file to automatically source the workspace everytime. You will now be able to access our launch files and respective packages!
-
-> :warning: **If you need to commit to this repository, do not add your `build/` and `devel/` directories. These will be ignored by the .gitignore file.**
-
-# Dependencies
-
-If not already installed, you will need the Eigen and Adafruit INA219 libraries.
-```bash
-sudo apt install libeigen3-dev # Both computer and Pi
-```
-```bash
-pip3 install adafruit-circuitpython-ina219 # Pi only
 ```

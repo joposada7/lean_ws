@@ -1,4 +1,4 @@
-# NoeticLean/controller
+# lean_ws/controller
 
 This package handles control of the motors and control of each robot.
 
