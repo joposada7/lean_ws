@@ -8,20 +8,25 @@
   <!-- Load config and parameters -->
   <rosparam file="$(find controller)/configs/$(arg user)_config.yaml" command="load"/>
   <rosparam file="$(find controller)/params.yaml" command="load"/>
+  <rosparam file="$(find controller)/configs/motion_planner_config.yaml" command="load"/>
 
   <!-- Launch logger -->
   <node name="roslogger" pkg="controller" type="roslogger.py" output="screen"/>
 
   <!-- Launch joy for kill switch -->
-  <!-- <node name="joy" pkg="joy" type="joy_node" output="screen"/> -->
-
-  <!-- Launch vicon throttler -->
-  <arg name="throttle_frequency" default="10.0"/>
-  <node name="vicon_throttler" pkg="topic_tools" type="throttle" args="messages vicon $(arg throttle_frequency)" output="screen"/>
+  <node name="joy" pkg="joy" type="joy_node" output="screen"/>
 
   <!-- Launch nodes remotely, assuming there is an /env/user_env.sh script -->
   <machine name="lean" address="$(arg ip)" user="$(arg user)" env-loader="/home/$(arg user)/lean_ws/src/controller/env/$(arg user)_env.sh"/>
   <!-- <node machine="lean" name="sensors" pkg="sensing" type="power_sense.py" output="screen"/> -->
   <node machine="lean" name="pid_control" pkg="controller" type="pid.py" output="screen"/>
   <node machine="lean" name="robot_control" pkg="controller" type="robot_controller.py" output="screen"/>
+
+  <!-- Launch vicon throttler -->
+  <arg name="throttle_frequency" default="10.0"/>
+  <node name="vicon_throttler" pkg="topic_tools" type="throttle" args="messages vicon $(arg throttle_frequency)" output="screen"/>
+
+  <!-- Launch motion-planner related nodes -->
+  <node machine="lean" name="motion_planner_helper" pkg="controller" type="planner_helper.py" output="screen"/>
+  <node machine="lean" name="map_spawner" pkg="controller" type="spawn_map.py" output="screen"/>
 </launch>

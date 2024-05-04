@@ -19,6 +19,7 @@ class CarJoy(JoyHandler):
 
 	def move_while_turning(self, duty_cycle_linear, duty_cycle_angular):
 		lwm, rwm = self.compensate(duty_cycle_linear)
+		# lwm, rwm = duty_cycle_linear, duty_cycle_linear
 		scale = self.scale_angular(duty_cycle_angular)
 		if duty_cycle_angular > 0.0:
 			# Left turns
@@ -36,19 +37,17 @@ class CarJoy(JoyHandler):
 		Compensate for misaligned wheels while moving forward or back.
 		Returns compensated (signed) duty cycles for LWM and RWM.
 
-		TODO: Forward left vs. right turns have different radii of rotation,
-		since for left turns RWM -> 100% but in right turns, LWM only goes -> 71%.
-		Maybe fixable by incorporating angular measurement in this compensation,
-		but that's a lot of brain I don't have !
+		NOTE: Needs to be recalibrated for major changes or when car isn't moving correctly.
+		E.g. when PCB changes or motors are replaced.
 		"""
 		if duty_cycle == 0.0:
 			return (0.0, 0.0)
 
 		if duty_cycle > 0.0:
-			LWM = 0.71*duty_cycle
-			RWM = duty_cycle
+			LWM = duty_cycle
+			RWM = 0.90*duty_cycle
 		else:
-			LWM = 0.80*duty_cycle
+			LWM = 0.85*duty_cycle
 			RWM = duty_cycle
 		return (LWM, RWM)
 
@@ -57,10 +56,15 @@ class CarJoy(JoyHandler):
 		For MOCAP testing:
 		https://docs.google.com/spreadsheets/d/1xdeZvM1NdKvcoEhWO4j_LPbAxA-xvcWVDYXAXQ32RLA/edit?usp=sharing
 		"""
-		DUTY_CYCLE = 80.0
-		self.motors.LWM.change_duty_cycle(DUTY_CYCLE)
-		self.motors.RWM.change_duty_cycle(DUTY_CYCLE)
-		# self.forward_or_back(DUTY_CYCLE)
+		# DUTY_CYCLE = 80.0
+		# lwm, rwm = self.compensate(DUTY_CYCLE)
+
+		lwm = 70.0
+		rwm = 100.0
+		self.motors.LWM.change_duty_cycle(lwm)
+		self.motors.RWM.change_duty_cycle(rwm)
+		rospy.loginfo(f"OVERRIDE: LWM {round(self.motors.LWM.get_duty_cycle(),1)}%")
+		rospy.loginfo(f"OVERRIDE: RWM {round(self.motors.RWM.get_duty_cycle(),1)}%")
 
 
 if __name__ == '__main__':

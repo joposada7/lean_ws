@@ -2,8 +2,6 @@
 import rospy
 from rosgraph_msgs.msg import Log
 
-NODE_NAME = "roslogger"
-
 class ROSLogger():
 	"""
 	Take messages from /rosout and rebroadcast them.
@@ -11,7 +9,7 @@ class ROSLogger():
 	"""
 	def __init__(self):
 		self.rosout_sub = rospy.Subscriber("rosout", Log, self.rebroadcast, queue_size=10)
-		self.WHITELIST = ["/joy_handler", "/pid_control", "/robot_control"]
+		self.WHITELIST = ["/joy_handler", "/pid_control", "/robot_control", "/sensors", "/motion_planner_helper", "/map_spawner"]
 
 	def rebroadcast(self, msg):
 		"""
@@ -35,6 +33,7 @@ class ROSLogger():
 
 
 if __name__ == '__main__':
-	rospy.init_node(NODE_NAME)
+	rospy.init_node("roslogger")
 	rl = ROSLogger()
+	rospy.loginfo("Initialized roslogger node.")
 	rospy.spin()

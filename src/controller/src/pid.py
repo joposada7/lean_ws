@@ -6,10 +6,13 @@ import tf
 from utils.diff_drive_kinematics import DiffDriveKinematics
 from utils.viz_tools import VisualizationTools
 
+from std_msgs.msg import Bool
 from geometry_msgs.msg import PointStamped, PoseStamped
 from sensor_msgs.msg import Joy
 from acl_msgs.msg import ViconState
 from controller.msg import Torques
+
+import time # FOR DEBUGGING
 
 class PIDController():
 	"""
@@ -17,14 +20,18 @@ class PIDController():
 	robot to move towards it.
 	"""
 	def __init__(self):
+		t0 = time.time()
+
 		rospy.loginfo("Initializing PID controller...")
 		self.vt = VisualizationTools()
+		t1 = time.time()
 
 		# PID parameters
 		self.kp = rospy.get_param("kp")
 		self.ki = rospy.get_param("ki")
 		self.kd = rospy.get_param("kd")
 		self.speed = rospy.get_param("speed")
+		t2 = time.time()
 
 		# Initialize needed errors and publisher
 		now = rospy.Time.now()
@@ -32,30 +39,49 @@ class PIDController():
 		self.previous_error = 0.0
 		self.accumulated_error = 0.0
 		self.torque_pub = rospy.Publisher("/torques", Torques, queue_size=1)
+		t3 = time.time()
 
 		# Keep track of position in world-frame
 		self.position = None
 		self.orientation = None
-		vicon_sub = rospy.Subscriber("/vicon", ViconState, self.update_pos)
+		vicon_sub = rospy.Subscriber("/vicon_throttle", ViconState, self.update_pos)
+		t4 = time.time()
 
 		# Get goal position
 		self.previous_goal = None
 		self.goal = None
 		goal_sub = rospy.Subscriber("/move_base_simple/goal", PoseStamped, self.update_goal)
+		self.goal_flag_reached_pub = rospy.Publisher("/goal_flag_reached", Bool, queue_size=10)
+		t5 = time.time()
 
 		# Waypoints list
 		# Start at [-3.68398738 -5.18117237  0.65178227]
-		self.waypoints = np.array([
-				[-3.20, -5.20, 0.652],
-				[-2.70, -4.90, 0.652]
-			])
+		# self.waypoints = np.array([
+		# 		[-3.20, -5.20, 0.652],
+		# 		[-2.70, -4.90, 0.652]
+		# 	])
 
 		# Listen to joystick
 		self.kill_switch_pressed = False
 		joy_sub = rospy.Subscriber("/joy", Joy, self.check_for_kill_switch, queue_size=1)
+		t6 = time.time()
 
 		self.ddk = DiffDriveKinematics()
 		rospy.loginfo("PID Controller initialized!")
+
+		t7 = time.time()
+		rospy.loginfo(f"""
+			Total elapsed time to initialize: 		  {round(t7-t0, 4)} s
+
+			Time to initialize VisualizationTools: 	  {round(t1-t0, 4)} s
+			Time to get rospy parameters: 			  {round(t2-t1, 4)} s
+			Time to initialize errors and torque pub: {round(t3-t2, 4)} s
+			Time to initialize pose and vicon sub: 	  {round(t4-t3, 4)} s
+			Time to initialize goals and goal sub: 	  {round(t5-t4, 4)} s
+			Time to initialize joy sub: 			  {round(t6-t5, 4)} s
+			Time to initialize DiffDriveKinematics:   {round(t7-t6, 4)} s
+			""")
+
 
 	def check_for_kill_switch(self, msg):
 		"""
@@ -81,7 +107,7 @@ class PIDController():
 		if abs(i) > 1.5:
 			# Limit integrator windup
 			i = 1.5 * i/abs(i)
-		if (self.previous_error < 0 and heading_error > 0) or (self.previous_error > 0 and heading_error < 0):
+		if (self.previous_error < 0 and heading_error >= 0) or (self.previous_error > 0 and heading_error <= 0):
 			# Reset integrator windup
 			i = 0.0
 			self.accumulated_error = 0.0
@@ -104,7 +130,7 @@ class PIDController():
 		# Experimentally gathered data:
 		"""
 		Forward left:  LWM=71% RWM=50%
-		Forward:		 LWM=71% RWM=100%
+		Forward:	   LWM=71% RWM=100%
 		Forward right: LWM=36% RWM=100%
 		
 		So we cap the LWM at 71% just because and RWM at 100%.
@@ -114,11 +140,16 @@ class PIDController():
 		MAX_ROTATION_RATE = 3.58 # rad/s (robot limit when turning and moving at +0.5m/s, reasonably?)
 		u = max(-MAX_ROTATION_RATE, min(MAX_ROTATION_RATE, u)) # Cap control input
 
-		LWM_LOW = 36
-		LWM_HIGH = 71
-		RWM_LOW = 50
-		RWM_HIGH = 100
+		# LWM_LOW = 36
+		# LWM_HIGH = 71
+		# RWM_LOW = 50
+		# RWM_HIGH = 100
 
+		LWM_LOW = 70
+		LWM_HIGH = 100
+		RWM_LOW = 70
+		RWM_HIGH = 100
+		
 		trq = Torques()
 		if u == 0.0:
 			# Forward
@@ -132,8 +163,11 @@ class PIDController():
 			# Forward right
 			trq.lwm = u*float(LWM_HIGH-LWM_LOW)/MAX_ROTATION_RATE + LWM_HIGH
 			trq.rwm = RWM_HIGH
+
 		trq.lvm=0.0
 		trq.rvm=0.0
+
+		rospy.loginfo(f"Publishing torque msg LWM={str(trq.lwm)}% and RWM={str(trq.rwm)}%")
 		self.torque_pub.publish(trq)
 
 	def stop(self):
@@ -146,15 +180,14 @@ class PIDController():
 		trq.lvm = 0.0
 		trq.rvm = 0.0
 		self.torque_pub.publish(trq)
+		# rospy.loginfo("Controller shut down!")
 
 	def angular_velocity_to_torque(self, omega):
 		"""
 		Convert between angular velocity and torque using experimentally derived relation.
 		"""
-
-		# TODO !!!!!!!!!!
-
-		return 0.5*omega + 70.0 # No.
+		# TODO!!!
+		raise NotImplementedError()
 
 	def get_error(self):
 		"""
@@ -162,17 +195,29 @@ class PIDController():
 		"""
 		if self.position is None or self.goal is None:
 			# Either robot position is unknown or goal is not set
+			rospy.logwarn("Tried to get error but position or goal is not known.")
+			rospy.logwarn(f"position: {str(self.position)}, goal: {str(self.goal)}")
 			return None, None
 
+		RADIUS = 0.35 # HARD CODED: What is the best goal radius for each robot?
+
 		dist_to_goal = np.linalg.norm(self.goal - self.position)
-		lookahead_point = self.get_lookahead_point(R=0.35)
-		if lookahead_point is None:
+		rospy.loginfo(f"Distance to goal: {dist_to_goal} m")
+
+		if True or dist_to_goal <= RADIUS:
 			lookahead_point = self.goal
+		else:
+			rospy.loginfo("Attempting to find lookahead point...")
+			lookahead_point = self.get_lookahead_point(R=RADIUS)
+			if lookahead_point is None:
+				lookahead_point = self.goal
+
 		rospy.loginfo(f"Found lookahead point {lookahead_point}, vizzing")
 		self.vt.draw_point("lookahead", lookahead_point) # Visualization in rviz
 
 		pos_error = lookahead_point - self.position
-		heading_error = self.get_signed_angle(self.orientation, pos_error)
+		rospy.loginfo(f"Current position error = {pos_error} m")
+		heading_error = -self.get_signed_angle(self.orientation, pos_error)
 		rospy.loginfo(f"Current heading error = {np.rad2deg(heading_error)} deg")
 
 		return (pos_error, heading_error)
@@ -222,18 +267,32 @@ class PIDController():
 		Update current known position and orientation using Vicon data.
 			- msg: acl_msgs/ViconState
 		"""
+		# t0 = time.time()
 		p = msg.pose.position
 		self.position = np.array([p.x, p.y, p.z])
+		# t1 = time.time()
 
 		if self.previous_goal is None:
 			# Set initial position as the zeroth waypoint
 			self.previous_goal = self.position
 			rospy.loginfo(f"Set the zeroth waypoint as {self.previous_goal}!")
+		# t2 = time.time()
 
 		o = msg.pose.orientation
 		theta = tf.transformations.euler_from_quaternion([o.x, o.y, o.z, o.w])[2]
+		# t3 = time.time()
 		self.orientation = np.array([np.cos(theta), np.sin(theta), 0])
 		self.vt.draw_arrow("position", self.position, [o.x, o.y, o.z, o.w])
+		# t4 = time.time()
+
+		# rospy.loginfo(f"""
+		# 	Total time to update position: 		 {round(t4-t0, 5)} s
+
+		# 	Time to check extract position: 	 {round(t1-t0, 5)} s
+		# 	Time to check previous_goal: 		 {round(t2-t1, 5)} s
+		# 	Time to convert euler to quaternion: {round(t3-t2, 5)} s
+		# 	Time to draw position arrow: 		 {round(t4-t3, 5)} s
+		# 	""")
 
 	def update_goal(self, msg):
 		"""
@@ -252,48 +311,58 @@ if __name__ == '__main__':
 	rospy.on_shutdown(pid.stop)
 	
 	# Start control loop
-	END_RADIUS = 0.05 # meters
-	rate = rospy.Rate(60)
+	END_RADIUS = 0.15 # meters
+	rate = rospy.Rate(10)
 
-	wp_i = 0
-	pid.goal = pid.waypoints[0]
-	pid.vt.draw_point("waypoint", pid.waypoints[0], rgb=[0.0,0.9,0.1])
-
+	# Normal loop
 	while not rospy.is_shutdown():
-		if not pid.kill_switch_pressed:
+		if pid.goal is None:
+			# No goal yet
 			pid.stop()
 			rate.sleep()
 			continue
+
+		# There is a goal, start control
 		pos_error, heading_error = pid.get_error()
-
-		if wp_i < len(pid.waypoints):
-			if np.linalg.norm(pos_error) > END_RADIUS:
-				# Haven't reached goal yet
-				pid.publish_control_input(heading_error)
-			else:
-				# Reached goal
-				pid.previous_goal = pid.goal
-				wp_i += 1
-				if wp_i < len(pid.waypoints):
-					pid.goal = pid.waypoints[wp_i]
-					pid.vt.draw_point("waypoint", pid.goal, rgb=[0.0,0.9,0.1])
-				rospy.loginfo(f"REACHED WAYPOINT {wp_i}!")
+		if pos_error is None or heading_error is None:
+			rospy.logwarn("Could not calculate error, sleeping.")
+			rate.sleep()
+			continue
+			
+		if np.linalg.norm(pos_error) > END_RADIUS:
+			# Haven't reached goal yet
+			pid.publish_control_input(heading_error)
 		else:
+			# Reached goal
+			pid.previous_goal = pid.goal
+			pid.goal = None
 			pid.stop()
+			pid.goal_flag_reached_pub.publish(data=True)
+			rospy.loginfo(f"Reached goal!")
+		rate.sleep()
 
+	# wp_i = 0
+	# pid.goal = pid.waypoints[0]
+	# pid.vt.draw_point("waypoint", pid.waypoints[0], rgb=[0.0,0.9,0.1])
 
+	# while not rospy.is_shutdown():
+	# 	if not pid.kill_switch_pressed:
+	# 		pid.stop()
+	# 		rate.sleep()
+	# 		continue
+	# 	pos_error, heading_error = pid.get_error()
 
-		# Normal loop
-		# if pid.goal is None:
-		# 	# No goal yet
-		# 	pid.stop()
-		# elif np.linalg.norm(pos_error) > END_RADIUS:
-		# 	# Haven't reached goal yet
-		# 	pid.publish_control_input(heading_error)
-		# else:
-		# 	# Reached goal
-		# 	pid.previous_goal = pid.goal
-		# 	pid.goal = None
-		# 	pid.stop()
-		# 	rospy.loginfo(f"Reached goal!")
-		# rate.sleep()
+	# 	if wp_i < len(pid.waypoints):
+	# 		if np.linalg.norm(pos_error) > END_RADIUS:
+	# 			# Haven't reached goal yet
+	# 			pid.publish_control_input(heading_error)
+	# 		else:
+	# 			# Reached goal
+	# 			pid.previous_goal = pid.goal
+	# 			wp_i += 1
+	# 			if wp_i < len(pid.waypoints):
+	# 				pid.goal = pid.waypoints[wp_i]
+	# 				pid.vt.draw_point("waypoint", pid.goal, rgb=[0.0,0.9,0.1])
+	# 			rospy.loginfo(f"REACHED WAYPOINT {wp_i}!")
+	# 	else:
+	# 		pid.stop()

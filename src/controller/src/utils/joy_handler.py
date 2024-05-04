@@ -50,8 +50,8 @@ class JoyHandler():
 		### GET INPUT ###
 
 		linear = self.get_throttle(msg.axes[1]) # Up/down on LS
-		angular = self.get_throttle(msg.axes[3]) # Left/right on RS
-		vertical = self.get_throttle(msg.axes[4]) # Up/down on RS
+		angular = self.get_throttle(-msg.axes[2]) # Left/right on RS
+		vertical = self.get_throttle(msg.axes[3]) # Up/down on RS
 
 		if self.KILL_SWITCH >= 0:
 			ks = msg.buttons[self.KILL_SWITCH]
@@ -107,6 +107,11 @@ class JoyHandler():
 		rospy.loginfo(f"TURN {round(duty_cycle,1)}%")
 
 	def move_while_turning(self, duty_cycle_linear, duty_cycle_angular):
+		"""
+		Bank turn by maintaining a duty cycle differential across LWM/RWM.
+			- Not like 2WD where back-left will translate you right.
+			- DD back-left will translate you left.
+		"""
 		scale = self.scale_angular(duty_cycle_angular)
 		if duty_cycle_angular > 0.0:
 			# Left turns
@@ -158,7 +163,7 @@ class JoyHandler():
 		"""
 		Map angular measurement from usual throttle range to allow for turning while moving.
 		"""
-		high = 0.50
+		high = 0.7
 		low = 1.0
 		original_range = self.HIGH_THROTTLE-self.LOW_THROTTLE
 		new_range = high-low
@@ -167,6 +172,14 @@ class JoyHandler():
 		mapped = low + (scaled * new_range)
 		return mapped
 
+	def remap_turning(self, linear, angular):
+		"""
+		Calculate desired LWM and RWM for moving while turning.
+		"""
+		pass
+
+
 if __name__ == '__main__':
 	rospy.init_node("joy_handler")
 	jh = JoyHandler()
+	rospy.spin()

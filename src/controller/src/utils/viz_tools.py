@@ -3,6 +3,8 @@
 import rospy
 import numpy as np
 
+from std_msgs.msg import ColorRGBA
+from geometry_msgs.msg import Point
 from visualization_msgs.msg import Marker
 
 class VisualizationTools():
@@ -77,5 +79,40 @@ class VisualizationTools():
 		m.color.r = rgb[0]
 		m.color.g = rgb[1]
 		m.color.b = rgb[2]
+
+		self.viz_pub.publish(m)
+
+	def draw_line(self, v1, v2):
+		"""
+		Draw line between 2 points.
+		"""
+		m = Marker()
+		m.header.stamp = rospy.Time.now()
+		m.header.frame_id = self.WORLD_FRAME
+		m.id = 3
+		m.type = 4 # LINE_STRIP
+		m.action = 0 # ADD
+		m.scale.x = 0.03
+
+		p1 = Point()
+		p1.x = v1[0]
+		p1.y = v1[1]
+		p1.z = v1[2]
+		p2 = Point()
+		p2.x = v2[0]
+		p2.y = v2[1]
+		p2.z = v2[2]
+		self.points.append(p1)
+		self.points.append(p2)
+		m.points = self.points
+
+		color = ColorRGBA()
+		color.r = 0.0
+		color.g = 1.0
+		color.b = 0.0
+		color.a = 1.0
+		self.colors.append(color)
+		self.colors.append(color)
+		m.colors = self.colors
 
 		self.viz_pub.publish(m)

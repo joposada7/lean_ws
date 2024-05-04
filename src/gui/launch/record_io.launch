@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<launch>
-  <!-- Begin recording IO -->
-  <param name="/use_sim_time" value="false"/>
-  <node name="io_recorder" pkg="gui" type="io_recorder.py" output="screen"/>
-</launch>

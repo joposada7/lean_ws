@@ -1,0 +1,16 @@
+# waypoint_topic: /waypoints
+waypoint_topic: /move_base_simple/goal
+
+planner_path: /home/wayfarer/rrt/motion_planners_3d/build/run_rrt_star_2d
+map_path: /home/wayfarer/rrt/motion_planners_3d/floorplan_maps/31-0_11027.csv
+results_path: ./motion_planner_results
+
+pixels_per_meter: 100
+
+start_x: 5.04
+start_y: 0.28
+start_z: 0
+
+goal_x: 2.04
+goal_y: 1.51
+goal_z: 0

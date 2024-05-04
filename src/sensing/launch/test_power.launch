@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+  <!-- Launch power sensor on local machine -->
+  <node name="power_sense" pkg="sensing" type="power_sense.py" output="screen"/>
+
+  <!-- Start printing out published power values -->
+  <node name="power_tester" pkg="sensing" type="test_power.py" output="screen"/>
+</launch>

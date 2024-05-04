@@ -9,7 +9,7 @@ Contains ROS OptiTrack Motive Client from https://github.com/mit-aera/OptiTrack-
 
 If not already installed, you will need these libraries for controller and sensing functionality.
 ```bash
-sudo apt install libeigen3-dev ros-noetic-joy # Both host machine and Pi
+sudo apt install libeigen3-dev ros-noetic-joy python3-pip # Both host machine and Pi
 pip3 install RPi.GPIO # Both host machine and Pi
 pip3 install adafruit-circuitpython-ina219 # Pi only
 ```

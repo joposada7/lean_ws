@@ -10,14 +10,14 @@ fi
 CATKIN_SHELL=sh
 
 # set ROS network
-export ROS_IP=$(hostname -I)
-export ROS_MASTER_URI=http://192.168.50.84:11311
+export ROS_IP=$(hostname -I | cut -d' ' -f 1)
+export ROS_MASTER_URI=http://192.168.50.118:11311
 
 # set _CATKIN_SETUP_DIR
-_CATKIN_SETUP_DIR=/home/blimp/NoeticLean/devel
+_CATKIN_SETUP_DIR=/home/bean/lean_ws/devel
 
 # source setup.sh from devel
 # . /opt/ros/noetic/setup.sh
-. ~/NoeticLean/devel/setup.sh
+. ~/lean_ws/devel/setup.sh
 
 exec "$@"
