@@ -70,17 +70,17 @@ class PIDController():
 		rospy.loginfo("PID Controller initialized!")
 
 		t7 = time.time()
-		rospy.loginfo(f"""
-			Total elapsed time to initialize: 		  {round(t7-t0, 4)} s
+		# rospy.loginfo(f"""
+		# 	Total elapsed time to initialize: 		  {round(t7-t0, 4)} s
 
-			Time to initialize VisualizationTools: 	  {round(t1-t0, 4)} s
-			Time to get rospy parameters: 			  {round(t2-t1, 4)} s
-			Time to initialize errors and torque pub: {round(t3-t2, 4)} s
-			Time to initialize pose and vicon sub: 	  {round(t4-t3, 4)} s
-			Time to initialize goals and goal sub: 	  {round(t5-t4, 4)} s
-			Time to initialize joy sub: 			  {round(t6-t5, 4)} s
-			Time to initialize DiffDriveKinematics:   {round(t7-t6, 4)} s
-			""")
+		# 	Time to initialize VisualizationTools: 	  {round(t1-t0, 4)} s
+		# 	Time to get rospy parameters: 			  {round(t2-t1, 4)} s
+		# 	Time to initialize errors and torque pub: {round(t3-t2, 4)} s
+		# 	Time to initialize pose and vicon sub: 	  {round(t4-t3, 4)} s
+		# 	Time to initialize goals and goal sub: 	  {round(t5-t4, 4)} s
+		# 	Time to initialize joy sub: 			  {round(t6-t5, 4)} s
+		# 	Time to initialize DiffDriveKinematics:   {round(t7-t6, 4)} s
+		# 	""")
 
 
 	def check_for_kill_switch(self, msg):
@@ -127,23 +127,8 @@ class PIDController():
 		rospy.loginfo(f"p={p} i={i} d={d}")
 		rospy.loginfo(f"u={u}")
 
-		# Experimentally gathered data:
-		"""
-		Forward left:  LWM=71% RWM=50%
-		Forward:	   LWM=71% RWM=100%
-		Forward right: LWM=36% RWM=100%
-		
-		So we cap the LWM at 71% just because and RWM at 100%.
-		If u>0, then we want to rotate left, so decrease RWM between 100% and 50% (keep LWM=71%)
-		If u<0, then we want to rotate right, so decrease LWM between 71% and 36% (keep RWM=100%)
-		"""
 		MAX_ROTATION_RATE = 3.58 # rad/s (robot limit when turning and moving at +0.5m/s, reasonably?)
 		u = max(-MAX_ROTATION_RATE, min(MAX_ROTATION_RATE, u)) # Cap control input
-
-		# LWM_LOW = 36
-		# LWM_HIGH = 71
-		# RWM_LOW = 50
-		# RWM_HIGH = 100
 
 		LWM_LOW = 70
 		LWM_HIGH = 100
@@ -155,7 +140,7 @@ class PIDController():
 			# Forward
 			trq.lwm = LWM_HIGH
 			trq.rwm = RWM_HIGH
-		elif u > 0.0:
+		elif u < 0.0:
 			# Forward left
 			trq.lwm = LWM_HIGH
 			trq.rwm = u*float(RWM_LOW-RWM_HIGH)/MAX_ROTATION_RATE + RWM_HIGH
@@ -336,7 +321,7 @@ if __name__ == '__main__':
 			# Reached goal
 			pid.previous_goal = pid.goal
 			pid.goal = None
-			pid.stop()
+			# pid.stop()
 			pid.goal_flag_reached_pub.publish(data=True)
 			rospy.loginfo(f"Reached goal!")
 		rate.sleep()
