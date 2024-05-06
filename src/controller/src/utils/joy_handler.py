@@ -50,7 +50,7 @@ class JoyHandler():
 		### GET INPUT ###
 
 		linear = self.get_throttle(msg.axes[1]) # Up/down on LS
-		angular = self.get_throttle(-msg.axes[2]) # Left/right on RS
+		angular = self.get_throttle(msg.axes[2]) # Left/right on RS
 		vertical = self.get_throttle(msg.axes[3]) # Up/down on RS
 
 		if self.KILL_SWITCH >= 0:

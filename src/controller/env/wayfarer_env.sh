@@ -11,7 +11,7 @@ CATKIN_SHELL=sh
 
 # set ROS network
 export ROS_IP=$(hostname -I | cut -d' ' -f 1)
-export ROS_MASTER_URI=http://192.168.50.118:11311
+export ROS_MASTER_URI=http://192.168.50.43:11311
 
 # set _CATKIN_SETUP_DIR
 _CATKIN_SETUP_DIR=/home/wayfarer/lean_ws/devel
