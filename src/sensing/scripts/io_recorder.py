@@ -166,12 +166,15 @@ class IORecorder:
 		rospy.loginfo("Logged output data into " + output_path + "!")
 
 		# Get relevant averages for torque-omega curve
-		i0 = next(i for (i,dc) in enumerate(self.lwm_inputs) if dc > 0.0)
-		i1 = i0+next(i for (i,dc) in enumerate(self.lwm_inputs[i0:]) if dc == 0.0)
-		di = int((i1-i0)*0.10) # Close bounds 20%
-		t0 = self.times_i[i0+di]
-		t1 = self.times_i[i1-di]
-		rospy.loginfo(f"Found start time t0={round(t0,3)} and end time t1={round(t1,3)}")
+		# i0 = next(i for (i,dc) in enumerate(self.lwm_inputs) if dc > 0.0)
+		# i1 = i0+next(i for (i,dc) in enumerate(self.lwm_inputs[i0:]) if dc == 0.0)
+		# di = int((i1-i0)*0.10) # Close bounds 20%
+		# t0 = self.times_i[i0+di]
+		# t1 = self.times_i[i1-di]
+		# rospy.loginfo(f"Found start time t0={round(t0,3)} and end time t1={round(t1,3)}")
+
+		t0 = self.times_o[1]
+		t1 = self.times_o[-2]
 		rospy.loginfo(f"AVERAGE VELOCITY DURING TEST = {round(self.get_average(self.velocity, t0, t1),3)} m/s")
 		rospy.loginfo(f"AVERAGE ANGULAR VELOCITY DURING TEST = {round(self.get_average(self.angular_velocity, t0, t1),3)} rad/s")
 		rospy.loginfo(f"AVERAGE ACUTATION POWER DURING TEST = {round(self.get_average(self.actuation_power, t0, t1),3)} W")

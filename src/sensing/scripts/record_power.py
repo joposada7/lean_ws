@@ -109,4 +109,23 @@ if __name__ == '__main__':
         w.writerow(["t", "computation_power", "computation_voltage", "actuation_power", "actuation_voltage"]) # Header
         w.writerows(power_data)
 
-    print("Logged power data to ~/data/power-data-" + filename + ".csv")
+    print("Logged power data to ~/data/power_data-" + filename + ".csv")
+
+    # Find total energy usage
+    computation_energy = 0.0
+    actuation_energy = 0.0
+    for i in range(len(computation_power)):
+        computation_energy += computation_power[i]*dt
+        actuation_energy += actuation_power[i]*dt
+
+    # Report summary
+    print(f"""
+        TEST RUNTIME:              {round(times[-1],3)} s
+        AVERAGE ACTUATION POWER:   {round(np.mean(actuation_power),3)} W
+        AVERAGE COMPUTATION POWER: {round(np.mean(computation_power),3)} W
+        AVERAGE POWER:             {round(np.mean(actuation_power) + np.mean(computation_power),3)} W
+
+        TOTAL ACTUATION ENERGY:    {round(actuation_energy,3)} J
+        TOTAL COMPUTATION ENERGY:  {round(computation_energy,3)} J
+        TOTAL ENERGY:              {round(actuation_energy + computation_energy,3)} J
+        """)
