@@ -128,7 +128,7 @@ class PIDController():
 		rospy.loginfo(f"u={u}")
 
 		MAX_ROTATION_RATE = 3.58 # rad/s (robot limit when turning and moving at +0.5m/s, reasonably?)
-		u = max(-MAX_ROTATION_RATE, min(MAX_ROTATION_RATE, u)) # Cap control input
+		u = -max(-MAX_ROTATION_RATE, min(MAX_ROTATION_RATE, u)) # Cap control input
 
 		LWM_LOW = 70
 		LWM_HIGH = 100
@@ -140,7 +140,7 @@ class PIDController():
 			# Forward
 			trq.lwm = LWM_HIGH
 			trq.rwm = RWM_HIGH
-		elif u < 0.0:
+		elif u > 0.0:
 			# Forward left
 			trq.lwm = LWM_HIGH
 			trq.rwm = u*float(RWM_LOW-RWM_HIGH)/MAX_ROTATION_RATE + RWM_HIGH

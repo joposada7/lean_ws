@@ -18,7 +18,7 @@
 
   <!-- Launch nodes remotely, assuming there is an /env/user_env.sh script -->
   <machine name="lean" address="$(arg ip)" user="$(arg user)" env-loader="/home/$(arg user)/lean_ws/src/controller/env/$(arg user)_env.sh"/>
-  <!-- <node machine="lean" name="sensors" pkg="sensing" type="power_sense.py" output="screen"/> -->
+  <node machine="lean" name="sensors" pkg="sensing" type="power_sense.py" output="screen"/>
   <node machine="lean" name="pid_control" pkg="controller" type="pid.py" output="screen"/>
   <node machine="lean" name="robot_control" pkg="controller" type="robot_controller.py" output="screen"/>
 

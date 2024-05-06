@@ -45,10 +45,10 @@ class CarJoy(JoyHandler):
 
 		if duty_cycle > 0.0:
 			LWM = duty_cycle
-			RWM = 0.90*duty_cycle
-		else:
-			LWM = 0.85*duty_cycle
 			RWM = duty_cycle
+		else:
+			LWM = duty_cycle
+			RWM = 0.95*duty_cycle
 		return (LWM, RWM)
 
 	def button_override(self):

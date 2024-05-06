@@ -76,6 +76,7 @@ class PlannerHelper():
 			for waypoint in cf:
 				p = np.array([float(n) for n in waypoint])
 				# self.waypoints.append(p) # NOT SURE: been having trouble with very very small dx (0,0,0) -> (0.006,0.1,0)
+				
 				self.waypoints.append(p - self.position) # Adjust for current offset in world frame
 
 	def waypoints_is_empty(self):
@@ -122,11 +123,11 @@ class PlannerHelper():
 			else:
 				q = q / np.linalg.norm(q) # Normalize quaternion
 
-			# rospy.loginfo("Drawing line...")
+			rospy.loginfo("Drawing line...")
 			
-			# # Draw line to next waypoint
-			# self.vt.draw_line(v1, v2)
-			# rospy.loginfo("Drew line.")
+			# Draw line to next waypoint
+			self.vt.draw_line(v1, v2)
+			rospy.loginfo("Drew line.")
 		else:
 			q = [0, 0, 0, 1]
 
